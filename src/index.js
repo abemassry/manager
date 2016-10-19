@@ -37,7 +37,7 @@ const init = () => {
         <Router history={history}>
           <Route
             onEnter={checkLogin}
-            path="/linodes/:linodeid/weblish"
+            path="/linodes/:linodeId/weblish"
             component={Weblish}
           />
           <Route
