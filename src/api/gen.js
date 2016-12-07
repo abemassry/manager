@@ -74,7 +74,7 @@ export function genDefaultState(config) {
   };
 }
 
-function addMeta(config, item) {
+export function addMeta(config, item) {
   const subs = config.subresources ?
     _.reduce(config.subresources, (acc, conf, key) => (
       { ...acc, [key]: { ...genDefaultState(conf) } }), { })

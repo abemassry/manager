@@ -41,4 +41,16 @@ describe('api/gen', () => {
       datacenters: {},
     });
   });
+
+  it('should add meta', () => {
+    const config = gen.genConfig({
+      plural: 'datacenters',
+      singular: 'datacenter',
+      localstoragecacheable: true,
+      endpoint: id => `/datacenters/${id}`,
+      supports: [gen.ONE, gen.MANY],
+    });
+    const addMeta = gen.addMeta(config, 'ph');
+    expect(addMeta).to.deep.equal({ 0: 'p', 1: 'h', _polling: false });
+  });
 });
