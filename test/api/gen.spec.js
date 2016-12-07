@@ -49,6 +49,8 @@ describe('api/gen', () => {
       supports: [gen.ONE, gen.MANY],
     });
     const addMeta = gen.addMeta(config, 'ph');
-    expect(addMeta).to.deep.equal({ 0: 'p', 1: 'h', _polling: false });
+    expect(addMeta[0]).to.equal('p');
+    expect(addMeta[1]).to.equal('h');
+    expect(addMeta._polling).to.equal(false);
   });
 });
