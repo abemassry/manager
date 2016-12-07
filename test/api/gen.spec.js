@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import * as gen from '../../src/api/gen.js';
-
+import * as gen from '../../src/api/gen';
 
 describe('api/gen', () => {
   describe('verfiyGenConfig', () => {
@@ -24,6 +23,22 @@ describe('api/gen', () => {
       expect(config.localStorageCacheable).to.equal(true);
       expect(config.supports).to.deep.equal(['ONE', 'MANY']);
       expect(config.parent).to.equal(undefined);
+    });
+  });
+
+  it('should generate a default state', () => {
+    const config = gen.genConfig({
+      plural: 'datacenters',
+      singular: 'datacenter',
+      localstoragecacheable: true,
+      endpoint: id => `/datacenters/${id}`,
+      supports: [gen.ONE, gen.MANY],
+    });
+    const df = gen.genDefaultState(config);
+    expect(df).to.deep.equal({
+      totalPages: -1,
+      totalResults: -1,
+      datacenters: {},
     });
   });
 });
