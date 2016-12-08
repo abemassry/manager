@@ -53,4 +53,18 @@ describe('api/gen', () => {
     expect(addMeta[1]).to.equal('h');
     expect(addMeta._polling).to.equal(false);
   });
+
+  it('should run invalidate', () => {
+    const config = gen.genConfig({
+      plural: 'datacenters',
+      singular: 'datacenter',
+      localstoragecacheable: true,
+      endpoint: id => `/datacenters/${id}`,
+      supports: [gen.ONE, gen.MANY],
+    });
+    const state = { placeholder: 'placeholder' };
+    const action = { ids: [], partial: true, type: 'GEN@linodes/INVALIDATE' };
+    const invalid = gen.ReducerGenerator.invalidate(config, state, action);
+    expect(invalid).to.deep.equal({ placeholder: 'placeholder', invalid: true });
+  });
 });

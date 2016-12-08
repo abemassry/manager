@@ -82,8 +82,9 @@ export function addMeta(config, item) {
   return { ...item, _polling: false, ...subs, __updatedAt: new Date() };
 }
 
-export function genReducer(_config) {
-  function one(config, state, action) {
+export class ReducerGenerator {
+
+  static one(config, state, action) {
     const previousId = action.ids[action.ids.length - 1];
     const previous = state[config.plural][previousId];
     const next = previous ? action.resource : addMeta(config, action.resource);
@@ -101,7 +102,7 @@ export function genReducer(_config) {
     };
   }
 
-  function many(config, state, action) {
+  static many(config, state, action) {
     const { page } = action;
 
     return {
@@ -123,7 +124,7 @@ export function genReducer(_config) {
     };
   }
 
-  function del(config, state, action) {
+  static del(config, state, action) {
     const id = action.ids[action.ids.length - 1];
     return {
       ...state,
@@ -132,7 +133,7 @@ export function genReducer(_config) {
     };
   }
 
-  function invalidate(config, state, action) {
+  static invalidate(config, state, action) {
     let newState = { ...state };
     if (action.partial) {
       // Keep data but mark as invalid to be overwritten
@@ -156,7 +157,7 @@ export function genReducer(_config) {
     return newState;
   }
 
-  function subresource(config, state, action) {
+  static subresource(config, state, action) {
     let path = action.type.substr(action.type.indexOf('@') + 1);
     path = path.substr(0, path.indexOf('/'));
     const names = path.split('.');
@@ -190,31 +191,34 @@ export function genReducer(_config) {
 
     const subaction = { ...action, ids: ids.splice(1) };
     const item = state[config.plural][ids[0]];
-    return one(config, state, {
+    return ReducerGenerator.one(config, state, {
       ids: action.ids,
       // eslint-disable-next-line no-use-before-define
-      resource: { [subkey]: reducer(subconfig, item[subkey], subaction) },
+      resource: { [subkey]: ReducerGenerator.reducer(subconfig, item[subkey], subaction) },
     });
   }
 
-  function reducer(config, state, action) {
+  static reducer(config, state, action) {
     switch (action.type) {
       case `GEN@${fullyQualified(config)}/ONE`:
-        return one(config, state, action);
+        return ReducerGenerator.one(config, state, action);
       case `GEN@${fullyQualified(config)}/MANY`:
-        return many(config, state, action);
+        return ReducerGenerator.many(config, state, action);
       case `GEN@${fullyQualified(config)}/DELETE`:
-        return del(config, state, action);
+        return ReducerGenerator.del(config, state, action);
       case `GEN@${fullyQualified(config)}/INVALIDATE`:
-        return invalidate(config, state, action);
+        return ReducerGenerator.invalidate(config, state, action);
       default:
         if (action.type && action.type.indexOf(`GEN@${config.plural}.`) === 0) {
-          return subresource(config, state, action);
+          return ReducerGenerator.subresource(config, state, action);
         }
         return state;
     }
   }
 
-  const defaultState = genDefaultState(_config);
-  return (state = defaultState, action) => reducer(_config, state, action);
+  constructor(_config) {
+    const defaultState = genDefaultState(_config);
+    this.reducer = (state = defaultState, action) =>
+      ReducerGenerator.reducer(_config, state, action);
+  }
 }

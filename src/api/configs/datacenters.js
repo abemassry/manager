@@ -1,5 +1,5 @@
 import {
-  genConfig, genReducer, genActions,
+  genConfig, ReducerGenerator, genActions,
   ONE, MANY,
 } from '~/api/gen';
 
@@ -12,4 +12,4 @@ export const config = genConfig({
 });
 
 export const actions = genActions(config);
-export const reducer = genReducer(config);
+export const { reducer } = new ReducerGenerator(config);
