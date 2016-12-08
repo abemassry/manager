@@ -85,6 +85,9 @@ export function addMeta(config, item) {
 export class ReducerGenerator {
 
   static one(config, state, action) {
+    console.log('config: ', config);
+    console.log('state: ', state);
+    console.log('action: ', action);
     const previousId = action.ids[action.ids.length - 1];
     const previous = state[config.plural][previousId];
     const next = previous ? action.resource : addMeta(config, action.resource);

@@ -28,7 +28,7 @@ describe('api/gen', () => {
     const config = gen.genConfig({
       plural: 'datacenters',
       singular: 'datacenter',
-      localstoragecacheable: true,
+      localStorageCacheable: true,
       endpoint: id => `/datacenters/${id}`,
       supports: [gen.ONE, gen.MANY],
     });
@@ -44,7 +44,7 @@ describe('api/gen', () => {
     const config = gen.genConfig({
       plural: 'datacenters',
       singular: 'datacenter',
-      localstoragecacheable: true,
+      localStorageCacheable: true,
       endpoint: id => `/datacenters/${id}`,
       supports: [gen.ONE, gen.MANY],
     });
@@ -58,7 +58,7 @@ describe('api/gen', () => {
     const config = gen.genConfig({
       plural: 'datacenters',
       singular: 'datacenter',
-      localstoragecacheable: true,
+      localStorageCacheable: true,
       endpoint: id => `/datacenters/${id}`,
       supports: [gen.ONE, gen.MANY],
     });
@@ -67,5 +67,19 @@ describe('api/gen', () => {
     const invalid = gen.ReducerGenerator.invalidate(config, state, action);
     expect(invalid.placeholder).to.equal('placeholder');
     expect(invalid.invalid).to.equal(true);
+  });
+
+  it('should run one', () => {
+    const config = gen.genConfig({
+      plural: 'datacenters',
+      singular: 'datacenter',
+      localStorageCacheable: true,
+      endpoint: id => `/datacenters/${id}`,
+      supports: [gen.ONE, gen.MANY],
+    });
+    const state = { placeholder: 'placeholder' };
+    const action = { ids: [], partial: false, type: 'GEN@linodes/ONE' };
+    console.log(gen.ReducerGenerator.one(config, state, action));
+    expect(true).to.equal(false);
   });
 });
