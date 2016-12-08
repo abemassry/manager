@@ -65,6 +65,7 @@ describe('api/gen', () => {
     const state = { placeholder: 'placeholder' };
     const action = { ids: [], partial: true, type: 'GEN@linodes/INVALIDATE' };
     const invalid = gen.ReducerGenerator.invalidate(config, state, action);
-    expect(invalid).to.deep.equal({ placeholder: 'placeholder', invalid: true });
+    expect(invalid.placeholder).to.equal('placeholder');
+    expect(invalid.invalid).to.equal(true);
   });
 });
