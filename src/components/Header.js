@@ -53,7 +53,7 @@ export default function Header(props) {
         </Link>
       </div>
       <div className="MainHeader-search">
-        <input placeholder="Search..." disabled />
+        <input placeholder="Search..." />
       </div>
       {!username ? null :
         <div

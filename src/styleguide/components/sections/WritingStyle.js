@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { StyleguideSection } from '~/styleguide/components';
+import Section from '~/styleguide/components/Section';
 
 export default function WritingStyle() {
   return (
-    <StyleguideSection name="writing-style" title="Writing Style">
+    <Section name="writing-style" title="Writing Style">
       <p></p>
-    </StyleguideSection>
+    </Section>
   );
 }

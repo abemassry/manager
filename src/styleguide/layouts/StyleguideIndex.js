@@ -23,7 +23,7 @@ function createNavigationItems() {
 
   return navigationItems.map((item) => {
     const className = item.href === currentPathname ? 'active' : null;
-    return <li key={item.href}><Link to={item.href} className={className}>{item.text}</Link></li>;
+    return <li><Link to={item.href} className={className}>{item.text}</Link></li>;
   });
 }
 
@@ -31,9 +31,9 @@ export function StyleguideIndex(props) {
   return (
     <div className="Styleguide-container">
       <div className="Styleguide-header">
-        <a href="/" className="Styleguide-back-link">
+        <Link to="/" className="Styleguide-back-link">
           <i className="fa fa-angle-left"></i> Back to Manager
-        </a>
+        </Link>
         <div className="container">
           <h1>
             <img
