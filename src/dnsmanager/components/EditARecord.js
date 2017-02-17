@@ -6,11 +6,11 @@ import SelectDNSSeconds from './SelectDNSSeconds';
 import { Form, Select, Input, SubmitButton, CancelButton } from '~/components/form';
 import { reduceErrors, ErrorSummary } from '~/errors';
 
-export default class EditNSRecord extends Component {
+export default class EditARecord extends Component {
   constructor(props) {
     super();
 
-    const { id, zone: { ttl_sec: defaultTTL, dnszone: zone } } = props;
+    const { id, zone: { ttl_sec: defaultTTL } } = props;
     const {
       type,
       target: ip,
@@ -19,7 +19,6 @@ export default class EditNSRecord extends Component {
     } = props.zone._records.records[id] || {};
 
     this.state = {
-      zone,
       defaultTTL,
       ttl,
       hostname,
@@ -64,7 +63,7 @@ export default class EditNSRecord extends Component {
 
   render() {
     const { close } = this.props;
-    const { errors, saving, zone, defaultTTL, type, ttl, ip, hostname } = this.state;
+    const { errors, saving, defaultTTL, type, ttl, ip, hostname } = this.state;
 
     return (
       <Form onSubmit={this.onSubmit}>
@@ -73,7 +72,7 @@ export default class EditNSRecord extends Component {
             id="hostname"
             name="hostname"
             value={hostname}
-            placeholder="a"
+            placeholder="www"
             onChange={this.onChange}
           />
         </ModalFormGroup>
@@ -110,7 +109,9 @@ export default class EditNSRecord extends Component {
         </ModalFormGroup>
         <div className="Modal-footer">
           <CancelButton onClick={close} />
-          <SubmitButton disabled={saving}>{this.props.id ? 'Save' : 'Add A/AAAA Record'}</SubmitButton>
+          <SubmitButton disabled={saving}>
+            {this.props.id ? 'Save' : 'Add A/AAAA Record'}
+          </SubmitButton>
         </div>
         <ErrorSummary errors={errors} />
       </Form>
@@ -118,7 +119,7 @@ export default class EditNSRecord extends Component {
   }
 }
 
-EditNSRecord.propTypes = {
+EditARecord.propTypes = {
   dispatch: PropTypes.func.isRequired,
   zone: PropTypes.object.isRequired,
   close: PropTypes.func.isRequired,

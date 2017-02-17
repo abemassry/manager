@@ -18,7 +18,7 @@ describe('dnsmanager/components/EditARecord', () => {
 
   it('renders fields correctly', () => {
     const currentZone = api.dnszones.dnszones['1'];
-    const currentRecord = currentZone._records.records[4];
+    const currentRecord = currentZone._records.records[1];
     const page = mount(
       <EditARecord
         dispatch={dispatch}
@@ -28,19 +28,19 @@ describe('dnsmanager/components/EditARecord', () => {
       />
     );
 
-    const nameserver = page.find('#mailserver');
-    expect(nameserver.props().value).to.equal(currentRecord.target);
+    const nameserver = page.find('#hostname');
+    expect(nameserver.props().value).to.equal(currentRecord.name);
 
-    const subdomain = page.find('#subdomain');
-    expect(subdomain.props().value).to.equal(currentRecord.name || currentZone.dnszone);
+    const subdomain = page.find('#ip');
+    expect(subdomain.props().value).to.equal(currentRecord.target);
 
-    const ttl = page.find('#preference');
-    expect(+ttl.props().value).to.equal(currentRecord.priority);
+    const ttl = page.find('#ttl');
+    expect(+ttl.props().value).to.equal(currentRecord.ttl_sec || currentZone.ttl_sec);
   });
 
   it('submits data onsubmit and closes modal', async () => {
     const currentZone = api.dnszones.dnszones['1'];
-    const currentRecord = currentZone._records.records[4];
+    const currentRecord = currentZone._records.records[1];
     const close = sandbox.spy();
     const page = mount(
       <EditARecord
@@ -54,9 +54,9 @@ describe('dnsmanager/components/EditARecord', () => {
     const changeInput = (name, value) =>
       page.instance().setState({ [name]: value });
 
-    changeInput('mailserver', 'mx1.tester1234.com');
-    changeInput('subdomain', 'tester1234.com');
-    changeInput('preference', 1);
+    changeInput('hostname', 'tee');
+    changeInput('ip', '4.4.4.4');
+    changeInput('ttl', 1);
 
     await page.find('Form').props().onSubmit();
 
@@ -68,15 +68,15 @@ describe('dnsmanager/components/EditARecord', () => {
       fn, `/dns/zones/${currentZone.id}/records/${currentRecord.id}`, undefined, undefined, {
         method: 'PUT',
         body: {
-          target: 'mx1.tester1234.com',
-          name: 'tester1234.com',
-          priority: 1,
+          target: '4.4.4.4',
+          name: 'tee',
+          ttl_sec: 1,
           type: 'A',
         },
       });
   });
 
-  it('creates a new A record and closes the modal', async () => {
+  it('creates a new AAAA record and closes the modal', async () => {
     const currentZone = api.dnszones.dnszones['1'];
     const close = sandbox.spy();
     const page = mount(
@@ -90,9 +90,10 @@ describe('dnsmanager/components/EditARecord', () => {
     const changeInput = (name, value) =>
       page.instance().setState({ [name]: value });
 
-    changeInput('mailserver', 'mx1.tester1234.com');
-    changeInput('subdomain', 'tester1234.com');
-    changeInput('preference', 1);
+    changeInput('ip', '1.1.1.8');
+    changeInput('hostname', 'too');
+    changeInput('ttl', 1);
+    changeInput('type', 'AAAA');
 
     dispatch.reset();
     await page.find('Form').props().onSubmit();
@@ -105,10 +106,10 @@ describe('dnsmanager/components/EditARecord', () => {
       fn, `/dns/zones/${currentZone.id}/records/`, undefined, undefined, {
         method: 'POST',
         body: {
-          target: 'mx1.tester1234.com',
-          name: 'tester1234.com',
-          priority: 1,
-          type: 'A',
+          target: '1.1.1.8',
+          name: 'too',
+          ttl_sec: 1,
+          type: 'AAAA',
         },
       });
   });
