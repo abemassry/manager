@@ -23,7 +23,7 @@ export default class EditARecord extends Component {
       ttl,
       hostname,
       ip,
-      type,
+      type: type || 'A',
       errors: {},
       saving: false,
     };
