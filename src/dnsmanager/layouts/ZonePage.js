@@ -9,7 +9,7 @@ import EditNSRecord from '../components/EditNSRecord';
 import EditMXRecord from '../components/EditMXRecord';
 import EditARecord from '../components/EditARecord';
 import EditTXTRecord from '../components/EditTXTRecord';
-import EditCNAMERecord from '../components/EditCNAMERecord';
+import EditSRVRecord from '../components/EditSRVRecord';
 import { setError } from '~/actions/errors';
 import { dnszones } from '~/api';
 import { getObjectByLabelLazily } from '~/api/util';
@@ -193,8 +193,8 @@ export class ZonePage extends Component {
     return this.renderEditRecord(title, EditTXTRecord, { id });
   }
 
-  renderEditCNAMERecord(title, id) {
-    return this.renderEditRecord(title, EditCNAMERecord, { id });
+  renderEditSRVRecord(title, id) {
+    return this.renderEditRecord(title, EditSRVRecord, { id });
   }
 
   render() {
@@ -235,7 +235,7 @@ export class ZonePage extends Component {
     const txtRecords = formatSeconds(
       addNav(this.formatTXTRecords(), (id) => this.renderEditTXTRecord('Edit TXT Record', id)));
     const srvRecords = formatSeconds(
-      addNav(this.formatSRVRecords()));
+      addNav(this.formatSRVRecords(), (id) => this.renderEditSRVRecord('Edit SRV Record', id)));
     const soaRecord = {
       ...currentDNSZone,
       ttl_sec: formatDNSSeconds(currentDNSZone.ttl_sec),
@@ -321,8 +321,9 @@ export class ZonePage extends Component {
             title="SRV Records"
             id="srv"
             records={srvRecords}
+            navOnClick={this.renderEditSRVRecord('Add SRV Record')}
             labels={['Service', 'Priority', 'Domain', 'Weight', 'Port', 'Target', 'TTL', '']}
-            keys={['name', 'priority', 'domain', 'weight', 'port', 'target', 'ttl_sec', 'nav']}
+            keys={['service', 'priority', 'domain', 'weight', 'port', 'target', 'ttl_sec', 'nav']}
           />
         </div>
       </div>
