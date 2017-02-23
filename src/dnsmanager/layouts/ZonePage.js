@@ -82,7 +82,7 @@ export class ZonePage extends Component {
             className="btn-secondary"
           >Edit</Button>
           <Button
-            onClick={() => this.deleteRecord('Delete NS Record', record.id)}
+            onClick={this.renderDeleteRecord('Delete NS Record', record.id)}
             className="btn-secondary"
           >Delete</Button>
         </div>
@@ -152,12 +152,13 @@ export class ZonePage extends Component {
     );
   }
 
-  async deleteRecord(title, id, props) {
+  renderDeleteRecord(title, id, props) {
     const { dispatch } = this.props;
-    return () => dispatch(showModal('Confirm deletion',
+    dispatch(showModal(title,
       <ConfirmModalBody
         buttonText="Delete zone record"
         onOk={async () => {
+          console.log(dnszones, id)
           await dispatch(dnszones.records['delete'](id));
           dispatch(hideModal());
         }}
@@ -168,19 +169,18 @@ export class ZonePage extends Component {
     ));
   }
 
-
-
   renderEditRecord(title, component, props = {}) {
     const { dispatch } = this.props;
     const { currentDNSZone: zone } = this.state;
-    return () => dispatch(showModal(
+    dispatch(showModal(
       title,
       React.createElement(component, {
         ...props,
         dispatch,
         zone,
         close: () => dispatch(hideModal()),
-      })));
+      })
+    ));
   }
 
   renderEditSOARecord(title) {
@@ -211,38 +211,85 @@ export class ZonePage extends Component {
         ttl_sec: formatDNSSeconds(ttlSec, defaultTTLSec),
       };
     });
-    const addNav = (records, onEdit, onDelete) => records.map(record => ({
-      ...record, nav: (
-        <div>
-          <Button
-            onClick={onEdit && onEdit(record.id)}
-            className="btn-secondary"
-          >Edit</Button>
-          {/* Error occurs right here */}
-          <Button
-            onClick={onDelete && onDelete(record.id)}
-            className="btn-secondary"
-          >Delete</Button>
-        </div>
-      ),
-    }));
 
-    const nsRecords = formatSeconds(
-      this.formatNSRecords());
+    const addNav = (records = [], onEdit, onDelete) => {
+      return records.map((record) => {
+        let editButton;
+        if (onEdit) {
+          editButton = (
+            <Button
+              onClick={() => onEdit(record.id)}
+              className="btn-secondary"
+            >
+              Edit
+            </Button>
+          )
+        }
+
+        let deleteButton;
+        if (onDelete) {
+          deleteButton = (
+            <Button
+              onClick={() => onDelete(record.id)}
+              className="btn-secondary"
+            >
+              Delete
+            </Button>
+          );
+        }
+
+        return {
+          ...record,
+          nav: (
+            <div>
+              {editButton}
+              {deleteButton}
+            </div>
+          ),
+        };
+      });
+    }
+
+    const nsRecords = formatSeconds(this.formatNSRecords());
+
     const mxRecords = formatSeconds(
-      addNav(this.formatMXRecords(), (id) => this.renderEditMXRecord('Edit MX Record', id),
-      (id) => this.deleteRecord('Delete MX Record', id)
-    ));
+      addNav(
+        this.formatMXRecords(),
+        (id) => this.renderEditMXRecord('Edit MX Record', id),
+        (id) => this.renderDeleteRecord('Delete MX Record', id)
+      )
+    );
+
     const aRecords = formatSeconds(
-      addNav(this.formatARecords(), (id) => this.deleteRecord('Delete A/AAAA Record', id)));
+      addNav(
+        this.formatARecords(),
+        null,
+        (id) => this.renderDeleteRecord('Delete A/AAAA Record', id)
+      )
+    );
+
     const cnameRecords = formatSeconds(
-      addNav(_cnameRecords || [], (id) => this.deleteRecord('Delete CNAME Record', id)));
+      addNav(
+        _cnameRecords,
+        null,
+        (id) => this.renderDeleteRecord('Delete CNAME Record', id)
+      )
+    );
+
     const txtRecords = formatSeconds(
-      addNav(this.formatTXTRecords(), (id) => this.renderEditTXTRecord('Edit TXT Record', id),
-      (id) => this.deleteRecord('Delete TXT Record', id)
-    ));
+      addNav(
+        this.formatTXTRecords(),
+        (id) => this.renderEditTXTRecord('Edit TXT Record', id),
+        (id) => this.renderDeleteRecord('Delete TXT Record', id)
+      )
+    );
+
     const srvRecords = formatSeconds(
-      addNav(this.formatSRVRecords()));
+      addNav(
+        this.formatSRVRecords()
+      )
+    );
+
     const soaRecord = {
       ...currentDNSZone,
       ttl_sec: formatDNSSeconds(currentDNSZone.ttl_sec),
