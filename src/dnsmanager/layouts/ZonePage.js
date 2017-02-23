@@ -126,7 +126,7 @@ export class ZonePage extends Component {
     }));
   }
 
-  renderRecords = ({ title, id, records, labels, keys, nav, navOnClick }) => {
+  renderRecords = ({ title, singularTitle, id, records, labels, keys, nav, navOnClick }) => {
     let cardContents = <p>No records created.</p>;
     if (records && records.length) {
       cardContents = (
@@ -134,6 +134,14 @@ export class ZonePage extends Component {
           labels={labels}
           keys={keys}
           rows={records}
+          onRowClick={(e, record) => {
+            const classList = e.target.classList;
+            if (classList.contains('edit-button')) {
+              this.renderEditRecord(`Edit ${singularTitle}`, record.id);
+            } else if (classList.contains('delete-button')) {
+              this.renderDeleteRecord(`Delete ${singularTitle}`, record.id);
+            }
+          }}
         />
       );
     }
@@ -170,17 +178,19 @@ export class ZonePage extends Component {
   }
 
   renderEditRecord(title, component, props = {}) {
-    const { dispatch } = this.props;
-    const { currentDNSZone: zone } = this.state;
-    dispatch(showModal(
-      title,
-      React.createElement(component, {
-        ...props,
-        dispatch,
-        zone,
-        close: () => dispatch(hideModal()),
-      })
-    ));
+    const {dispatch} = this.props;
+    const {currentDNSZone: zone} = this.state;
+    return () => {
+      dispatch(showModal(
+        title,
+        React.createElement(component, {
+          ...props,
+          dispatch,
+          zone,
+          close: () => dispatch(hideModal()),
+        })
+      ));
+    }
   }
 
   renderEditSOARecord(title) {
@@ -212,38 +222,14 @@ export class ZonePage extends Component {
       };
     });
 
-    const addNav = (records = [], onEdit, onDelete) => {
+    const addNav = (records = []) => {
       return records.map((record) => {
-        let editButton;
-        if (onEdit) {
-          editButton = (
-            <Button
-              onClick={() => onEdit(record.id)}
-              className="btn-secondary"
-            >
-              Edit
-            </Button>
-          )
-        }
-
-        let deleteButton;
-        if (onDelete) {
-          deleteButton = (
-            <Button
-              onClick={() => onDelete(record.id)}
-              className="btn-secondary"
-            >
-              Delete
-            </Button>
-          );
-        }
-
         return {
           ...record,
           nav: (
             <div>
-              {editButton}
-              {deleteButton}
+              <Button className="btn-secondary edit-button">Edit</Button>
+              <Button className="btn-secondary delete-button">Delete</Button>
             </div>
           ),
         };
@@ -251,44 +237,11 @@ export class ZonePage extends Component {
     }
 
     const nsRecords = formatSeconds(this.formatNSRecords());
-
-    const mxRecords = formatSeconds(
-      addNav(
-        this.formatMXRecords(),
-        (id) => this.renderEditMXRecord('Edit MX Record', id),
-        (id) => this.renderDeleteRecord('Delete MX Record', id)
-      )
-    );
-
-    const aRecords = formatSeconds(
-      addNav(
-        this.formatARecords(),
-        null,
-        (id) => this.renderDeleteRecord('Delete A/AAAA Record', id)
-      )
-    );
-
-    const cnameRecords = formatSeconds(
-      addNav(
-        _cnameRecords,
-        null,
-        (id) => this.renderDeleteRecord('Delete CNAME Record', id)
-      )
-    );
-
-    const txtRecords = formatSeconds(
-      addNav(
-        this.formatTXTRecords(),
-        (id) => this.renderEditTXTRecord('Edit TXT Record', id),
-        (id) => this.renderDeleteRecord('Delete TXT Record', id)
-      )
-    );
-
-    const srvRecords = formatSeconds(
-      addNav(
-        this.formatSRVRecords()
-      )
-    );
+    const mxRecords = formatSeconds(addNav(this.formatMXRecords()));
+    const aRecords = formatSeconds(addNav(this.formatARecords()));
+    const cnameRecords = formatSeconds(addNav(_cnameRecords));
+    const txtRecords = formatSeconds(addNav(this.formatTXTRecords()));
+    const srvRecords = formatSeconds(addNav(this.formatSRVRecords()));
 
     const soaRecord = {
       ...currentDNSZone,
@@ -323,6 +276,7 @@ export class ZonePage extends Component {
         <div className="container">
           <this.renderRecords
             title="SOA Record"
+            singularTitle="SOA Record"
             id="soa"
             records={[soaRecord]}
             labels={['Primary DNS', 'Email', 'Default TTL', 'Refresh Rate', 'Retry Rate',
@@ -333,6 +287,7 @@ export class ZonePage extends Component {
           />
           <this.renderRecords
             title="NS Records"
+            singularTitle="NS Record"
             id="ns"
             records={nsRecords}
             navOnClick={this.renderEditNSRecord('Add NS Record')}
@@ -341,6 +296,7 @@ export class ZonePage extends Component {
           />
           <this.renderRecords
             title="MX Records"
+            singularTitle="MX Record"
             id="mx"
             records={mxRecords}
             navOnClick={this.renderEditMXRecord('Add MX Record')}
@@ -349,6 +305,7 @@ export class ZonePage extends Component {
           />
           <this.renderRecords
             title="A/AAAA Records"
+            singularTitle="A/AAAA Record"
             id="a"
             records={aRecords}
             labels={['Hostname', 'IP Address', 'TTL', '']}
@@ -356,6 +313,7 @@ export class ZonePage extends Component {
           />
           <this.renderRecords
             title="CNAME Records"
+            singularTitle="CNAME Record"
             id="cname"
             records={cnameRecords}
             labels={['Hostname', 'Aliases to', 'TTL', '']}
@@ -363,6 +321,7 @@ export class ZonePage extends Component {
           />
           <this.renderRecords
             title="TXT Records"
+            singularTitle="TXT Record"
             id="txt"
             records={txtRecords}
             navOnClick={this.renderEditTXTRecord('Add TXT Record')}
