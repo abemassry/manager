@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 
 import { showModal, hideModal } from '~/actions/modal';
+import ConfirmModalBody from '~/components/modals/ConfirmModalBody';
 import { formatDNSSeconds, ONE_DAY } from '../components/SelectDNSSeconds';
 import EditSOARecord from '../components/EditSOARecord';
 import EditNSRecord from '../components/EditNSRecord';
@@ -80,7 +81,10 @@ export class ZonePage extends Component {
             onClick={this.renderEditNSRecord('Edit NS Record', record.id)}
             className="btn-secondary"
           >Edit</Button>
-          <Button className="btn-secondary">Delete</Button>
+          <Button
+            onClick={() => this.deleteRecord('Delete NS Record', record.id)}
+            className="btn-secondary"
+          >Delete</Button>
         </div>
       ),
     }));
@@ -148,6 +152,24 @@ export class ZonePage extends Component {
     );
   }
 
+  async deleteRecord(title, id, props) {
+    const { dispatch } = this.props;
+    return () => dispatch(showModal('Confirm deletion',
+      <ConfirmModalBody
+        buttonText="Delete zone record"
+        onOk={async () => {
+          await dispatch(dnszones.records['delete'](id));
+          dispatch(hideModal());
+        }}
+        onCancel={() => dispatch(hideModal())}
+      >
+        Are you sure you want to delete the zone record?
+      </ConfirmModalBody>
+    ));
+  }
+
+
+
   renderEditRecord(title, component, props = {}) {
     const { dispatch } = this.props;
     const { currentDNSZone: zone } = this.state;
@@ -196,6 +218,7 @@ export class ZonePage extends Component {
             onClick={onEdit && onEdit(record.id)}
             className="btn-secondary"
           >Edit</Button>
+          {/* Error occurs right here */}
           <Button
             onClick={onDelete && onDelete(record.id)}
             className="btn-secondary"
@@ -207,13 +230,17 @@ export class ZonePage extends Component {
     const nsRecords = formatSeconds(
       this.formatNSRecords());
     const mxRecords = formatSeconds(
-      addNav(this.formatMXRecords(), (id) => this.renderEditMXRecord('Edit MX Record', id)));
+      addNav(this.formatMXRecords(), (id) => this.renderEditMXRecord('Edit MX Record', id),
+      (id) => this.deleteRecord('Delete MX Record', id)
+    ));
     const aRecords = formatSeconds(
-      addNav(this.formatARecords()));
+      addNav(this.formatARecords(), (id) => this.deleteRecord('Delete A/AAAA Record', id)));
     const cnameRecords = formatSeconds(
-      addNav(_cnameRecords || []));
+      addNav(_cnameRecords || [], (id) => this.deleteRecord('Delete CNAME Record', id)));
     const txtRecords = formatSeconds(
-      addNav(this.formatTXTRecords(), (id) => this.renderEditTXTRecord('Edit TXT Record', id)));
+      addNav(this.formatTXTRecords(), (id) => this.renderEditTXTRecord('Edit TXT Record', id),
+      (id) => this.deleteRecord('Delete TXT Record', id)
+    ));
     const srvRecords = formatSeconds(
       addNav(this.formatSRVRecords()));
     const soaRecord = {
