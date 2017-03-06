@@ -49,6 +49,10 @@ export class IndexPage extends Component {
   }
 
   renderConfigs(configs) {
+<<<<<<< HEAD
+=======
+    const { nbLabel } = this.props.params;
+>>>>>>> add edit nodebalancer configs
     const labels = [
       'Port',
       'Protocol',
@@ -72,10 +76,20 @@ export class IndexPage extends Component {
         ...config,
         protocol: config.protocol.toUpperCase(),
         algorithm: title(config.algorithm),
+<<<<<<< HEAD
         stickiness: title(config.stickiness),
         check: title(config.check),
         statusString: '0 up, 0 down',
         edit: <Button>Edit</Button>,
+=======
+        statusString: '0 up, 0 down',
+        edit: <Link
+          to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
+          className="btn btn-default"
+          >
+            Edit
+          </Link>,
+>>>>>>> add edit nodebalancer configs
       };
     });
 
