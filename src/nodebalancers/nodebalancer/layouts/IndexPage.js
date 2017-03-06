@@ -48,6 +48,25 @@ export class IndexPage extends Component {
   }
 
   renderConfigs(configs) {
+    const { nbLabel } = this.props.params;
+    const labels = [
+      'Port',
+      'Protocol',
+      'Algorithm',
+      'Session stickiness',
+      'Health check method',
+      'Node status',
+      '',
+    ];
+    const keys = [
+      'port',
+      'protocol',
+      'algorithm',
+      'stickiness',
+      'check',
+      'statusString',
+      'edit',
+    ];
     const newConfigs = configs.map((config) => {
       return {
         ...config,
@@ -56,6 +75,12 @@ export class IndexPage extends Component {
         stickiness: _.capitalize(config.stickiness),
         check: _.capitalize(config.check),
         statusString: '0 up, 0 down',
+        edit: <Link
+          to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
+          className="btn btn-default"
+          >
+            Edit
+          </Link>,
       };
     });
 
