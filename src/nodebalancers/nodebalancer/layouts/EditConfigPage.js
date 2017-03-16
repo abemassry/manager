@@ -1,27 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import _ from 'lodash';
 
 import { getObjectByLabelLazily } from '~/api/util';
 import { nodebalancers } from '~/api';
-import { renderDatacenterStyle } from '~/linodes/components/Linode';
 
-import { Form,
-  FormGroup,
-  FormGroupError,
-  Input,
-  Select,
-  Radio,
-  RadioInputCombo,
-  RadioSelectCombo,
-  Checkbox,
-  Checkboxes,
-} from '~/components/form';
-import { ErrorSummary, reduceErrors } from '~/errors';
-import { SubmitButton, CancelButton } from '~/components/form';
+import { reduceErrors } from '~/errors';
 import { Card } from '~/components/cards';
-import { LinkButton } from '~/components/buttons';
-import { setSource } from '~/actions/source';
 import { setError } from '~/actions/errors';
 import { ConfigForm } from '../components/ConfigForm';
 
@@ -60,7 +46,7 @@ export class EditConfigPage extends Component {
       check_attempts,
       nodebalancerConfigId,
     } = stateValues;
-    this.setState({ loading: true, errors: {}});
+    this.setState({ loading: true, errors: {} });
     const data = {
       port: parseInt(port),
       protocol,
@@ -88,7 +74,9 @@ export class EditConfigPage extends Component {
   render() {
     const { nbLabel, configId } = this.props.params;
     const { nodebalancers, id } = this.props;
-    const nodebalancerConfigId = _.findKey(nodebalancers.nodebalancers[id]._configs.configs, (o) => {
+    const nodebalancerConfigId = _.findKey(nodebalancers
+                                           .nodebalancers[id]
+                                           ._configs.configs, (o) => {
       return o.port === parseInt(configId);
     });
     const nodebalancer = nodebalancers.nodebalancers[id]._configs.configs[nodebalancerConfigId];
@@ -123,10 +111,10 @@ export class EditConfigPage extends Component {
               algorithm={nodebalancer.algorithm}
               stickiness={nodebalancer.stickiness}
               check={nodebalancer.check}
-              check_passive={nodebalancer.check_passive}
-              check_interval={nodebalancer.check_interval}
-              check_timeout={nodebalancer.check_timeout}
-              check_attempts={nodebalancer.check_attempts}
+              checkPassive={nodebalancer.check_passive}
+              checkInterval={nodebalancer.check_interval}
+              checkTimeout={nodebalancer.check_timeout}
+              checkAttempts={nodebalancer.check_attempts}
               nodebalancerConfigId={nodebalancerConfigId}
             />
           </Card>
@@ -140,6 +128,8 @@ EditConfigPage.propTypes = {
   dispatch: PropTypes.func,
   nodebalancers: PropTypes.object,
   params: PropTypes.any,
+  id: PropTypes.any,
+  label: PropTypes.string,
 };
 
 function select(state) {

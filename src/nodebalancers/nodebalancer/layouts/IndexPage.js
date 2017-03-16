@@ -7,7 +7,6 @@ import { setError } from '~/actions/errors';
 import { Link } from '~/components/Link';
 import { Card } from '~/components/cards';
 import SecondaryTable from '~/components/SecondaryTable';
-import { Button } from '~/components/buttons';
 import { NodebalancerStatusReadable } from '~/constants';
 import { renderDatacenterStyle } from '~/linodes/components/Linode';
 import { title } from '~/profile/integrations/components/AuthorizedApplication.js';
@@ -79,9 +78,9 @@ export class IndexPage extends Component {
         edit: <Link
           to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
           className="btn btn-default"
-          >
+        >
             Edit
-          </Link>,
+        </Link>,
       };
     });
 

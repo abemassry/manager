@@ -4,24 +4,9 @@ import { push } from 'react-router-redux';
 
 import { getObjectByLabelLazily } from '~/api/util';
 import { nodebalancers } from '~/api';
-import { renderDatacenterStyle } from '~/linodes/components/Linode';
 
-import { Form,
-  FormGroup,
-  FormGroupError,
-  Input,
-  Select,
-  Radio,
-  RadioInputCombo,
-  RadioSelectCombo,
-  Checkbox,
-  Checkboxes,
-} from '~/components/form';
-import { ErrorSummary, reduceErrors } from '~/errors';
-import { SubmitButton, CancelButton } from '~/components/form';
+import { reduceErrors } from '~/errors';
 import { Card } from '~/components/cards';
-import { LinkButton } from '~/components/buttons';
-import { setSource } from '~/actions/source';
 import { setError } from '~/actions/errors';
 import { ConfigForm } from '../components/ConfigForm';
 
@@ -59,7 +44,7 @@ export class AddConfigPage extends Component {
       check_timeout,
       check_attempts,
     } = stateValues;
-    this.setState({ loading: true, errors: {}});
+    this.setState({ loading: true, errors: {} });
     const data = {
       port: parseInt(port),
       protocol,
@@ -86,7 +71,6 @@ export class AddConfigPage extends Component {
 
   render() {
     const { nbLabel } = this.props.params;
-    //const { nodebalancers } = this.props;
     const { loading, errors } = this.state;
     return (
       <div>
@@ -122,6 +106,8 @@ AddConfigPage.propTypes = {
   dispatch: PropTypes.func,
   nodebalancers: PropTypes.object,
   params: PropTypes.any,
+  id: PropTypes.any,
+  label: PropTypes.string,
 };
 
 function select(state) {
