@@ -18,7 +18,7 @@ describe('nodebalancers/nodebalancer/IndexPage', () => {
   const dispatch = sandbox.stub();
 
   it('displays nodebalancer configs', () => {
-    const testNodebalancers = nodebalancers.nodebalancers;
+    const testNodebalancers = nodebalancers;
     const nbLabel = testNodebalancers.nodebalancers[0].label;
     const page = mount(
       <IndexPage dispatch={dispatch} params={{ nbLabel }} nodebalancers={testNodebalancers} />

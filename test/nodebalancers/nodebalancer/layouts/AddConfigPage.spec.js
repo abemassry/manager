@@ -21,6 +21,7 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
 
   it('commits changes to the API', async () => {
     const props = {
+      nodebalancers,
       params: {
         nbLabel: "nodebalancer-1",
       },
@@ -46,9 +47,9 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
     console.log(dispatch.callCount);
     expect(dispatch.calledTwice).to.equal(true);
     const fn = dispatch.firstCall.args[0];
-    console.log(nodebalancers.nodebalancers.nodebalancers[0].id);
+    console.log(nodebalancers.nodebalancers[0].id);
     await expectRequest(
-      fn, `/nodebalancers/${nodebalancers.nodebalancers.nodebalancers[0].id}/configs/`, undefined, undefined, {
+      fn, `/nodebalancers/${nodebalancers.nodebalancers[0].id}/configs/`, {
       method: 'POST',
       body: { values },
     });
