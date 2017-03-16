@@ -1,22 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { nodebalancers } from '~/api';
 import { renderDatacenterStyle } from '~/linodes/components/Linode';
 import { Form,
   FormGroup,
   FormGroupError,
   Input,
   Select,
-  Radio,
-  RadioInputCombo,
-  RadioSelectCombo,
   Checkbox,
-  Checkboxes,
 } from '~/components/form';
-import { ErrorSummary, reduceErrors } from '~/errors';
-import { SubmitButton, CancelButton } from '~/components/form';
-import { LinkButton } from '~/components/buttons';
-import { setSource } from '~/actions/source';
-import { setError } from '~/actions/errors';
+import { ErrorSummary } from '~/errors';
+import { SubmitButton } from '~/components/form';
 
 export class ConfigForm extends Component {
   constructor(props) {
@@ -29,32 +21,33 @@ export class ConfigForm extends Component {
       algorithm: props.algorithm,
       stickiness: props.stickiness,
       check: props.check,
-      check_passive: props.check_passive,
-      check_interval: props.check_interval,
-      check_timeout: props.check_timeout,
-      check_attempts: props.check_attempts,
+      checkPassive: props.checkPassive,
+      checkInterval: props.checkInterval,
+      checkTimeout: props.checkTimeout,
+      checkAttempts: props.checkAttempts,
     };
-
   }
 
   render() {
     const { saveChanges, loading, errors, submitText, nodebalancerConfigId } = this.props;
-    const { saving,
+    const {
       port,
       protocol,
       algorithm,
       stickiness,
       check,
-      check_passive,
-      check_interval,
-      check_timeout,
-      check_attempts,
+      checkPassive,
+      checkInterval,
+      checkTimeout,
+      checkAttempts,
     } = this.state;
     return (
-      <Form onSubmit={async () => {
-        const values = { nodebalancerConfigId, ...this.state };
-        await saveChanges(values);
-      }}>
+      <Form
+        onSubmit={async () => {
+          const values = { nodebalancerConfigId, ...this.state };
+          await saveChanges(values);
+        }}
+      >
         <FormGroup errors={errors} name="port" className="row">
           <label className="col-sm-2 col-form-label">Port</label>
           <div className="col-sm-6">
@@ -147,8 +140,8 @@ export class ConfigForm extends Component {
             <Input
               id="config-check_interval"
               placeholder="0"
-              value={check_interval}
-              onChange={e => this.setState({ check_interval: e.target.value })}
+              value={checkInterval}
+              onChange={e => this.setState({ checkInterval: e.target.value })}
             />
             <span className="text-muted">seconds</span>
             <FormGroupError errors={errors} name="check_interval" />
@@ -160,8 +153,8 @@ export class ConfigForm extends Component {
             <Input
               id="config-check_timeout"
               placeholder="0"
-              value={check_timeout}
-              onChange={e => this.setState({ check_timeout: e.target.value })}
+              value={checkTimeout}
+              onChange={e => this.setState({ checkTimeout: e.target.value })}
             />
             <span className="text-muted">seconds</span>
             <FormGroupError errors={errors} name="check_timeout" />
@@ -173,8 +166,8 @@ export class ConfigForm extends Component {
             <Input
               id="config-check_attempts"
               placeholder="0"
-              value={check_attempts}
-              onChange={e => this.setState({ check_attempts: e.target.value })}
+              value={checkAttempts}
+              onChange={e => this.setState({ checkAttempts: e.target.value })}
             />
             <div className="text-muted">
               Take this node out of rotation after this number of failed health checks
@@ -188,8 +181,8 @@ export class ConfigForm extends Component {
           <div className="col-sm-6">
             <Checkbox
               id="config-check_passive"
-              checked={!!check_passive}
-              onChange={() => this.setState({ check_passive: !check_passive }) }
+              checked={!!checkPassive}
+              onChange={() => this.setState({ checkPassive: !checkPassive })}
             />
             <div className="text-muted">
               Enable passive checks based on observed communication with backend nodes.
@@ -213,6 +206,17 @@ ConfigForm.propTypes = {
   nodebalancers: PropTypes.any,
   loading: PropTypes.any,
   errors: PropTypes.any,
+  port: PropTypes.number,
+  protocol: PropTypes.string,
+  algorithm: PropTypes.string,
+  stickiness: PropTypes.string,
+  check: PropTypes.string,
+  checkPassive: PropTypes.bool,
+  checkInterval: PropTypes.number,
+  checkTimeout: PropTypes.number,
+  checkAttempts: PropTypes.number,
+  submitText: PropTypes.string,
+  nodebalancerConfigId: PropTypes.any,
 };
 
 ConfigForm.defaultProps = {
@@ -221,8 +225,8 @@ ConfigForm.defaultProps = {
   algorithm: 'roundrobin',
   stickiness: 'table',
   check: 'connection',
-  check_passive: true,
-  check_interval: 5,
-  check_timeout: 3,
-  check_attempts: 2,
+  checkPassive: true,
+  checkInterval: 5,
+  checkTimeout: 3,
+  checkAttempts: 2,
 };

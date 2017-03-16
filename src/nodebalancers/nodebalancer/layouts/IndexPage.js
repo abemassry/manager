@@ -78,9 +78,9 @@ export class IndexPage extends Component {
         edit: <Link
           to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
           className="btn btn-default"
-          >
+        >
             Edit
-          </Link>,
+        </Link>,
       };
     });
 
