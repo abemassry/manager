@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 
-import { getObjectByLabelLazily } from '~/api/util';
+import { getObjectByLabelLazily, objectFromMapByLabel } from '~/api/util';
 import { nodebalancers } from '~/api';
 
 import { reduceErrors } from '~/errors';
@@ -32,7 +32,9 @@ export class AddConfigPage extends Component {
   }
 
   async saveChanges(stateValues) {
-    const { dispatch, id, label } = this.props;
+    const { dispatch, apiNodebalancers } = this.props;
+    const { nbLabel } = this.props.params;
+    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
     const {
       port,
       protocol,
@@ -57,9 +59,9 @@ export class AddConfigPage extends Component {
       check_attempts: parseInt(check_attempts),
     };
     try {
-      await dispatch(nodebalancers.configs.post(data, id));
+      await dispatch(nodebalancers.configs.post(data, nodebalancer.id));
       this.setState({ loading: false });
-      dispatch(push(`/nodebalancers/${label}`));
+      dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
       // Promisify the setState call so we can await it in tests.
       await new Promise(async (resolve) => this.setState({
@@ -104,19 +106,15 @@ export class AddConfigPage extends Component {
 
 AddConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  nodebalancers: PropTypes.object,
+  apiNodebalancers: PropTypes.object,
   params: PropTypes.any,
   id: PropTypes.any,
   label: PropTypes.string,
 };
 
 function select(state) {
-  const nodebalancer = state.api.nodebalancers
-    .nodebalancers[Object.keys(state.api.nodebalancers.nodebalancers)];
   return {
-    nodebalancers: state.api.nodebalancers,
-    id: nodebalancer.id,
-    label: nodebalancer.label,
+    apiNodebalancers: state.api.nodebalancers,
   };
 }
 export default connect(select)(AddConfigPage);
