@@ -47,9 +47,11 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
     await page.instance().saveChanges(values);
     expect(dispatch.calledTwice).to.equal(true);
     const fn = dispatch.firstCall.args[0];
-    console.log(nodebalancers.nodebalancers[0]._configs.configs[0]);
+    const nbId = nodebalancers.nodebalancers[0].id;
+    const nbConfigId = nodebalancers.nodebalancers[0]._configs.configs[1].id;
+    const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}`;
     await expectRequest(
-      fn, `/nodebalancers/${nodebalancers.nodebalancers[0].id}/configs/${nodebalancers.nodebalancers[0]._configs.configs[1].id}`,
+      fn, testPath,
       undefined, undefined, {
         method: 'PUT',
         body: { values },
