@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import { nodebalancers } from '~/api';
 import { getObjectByLabelLazily } from '~/api/util';
@@ -7,9 +8,10 @@ import { setError } from '~/actions/errors';
 import { Link } from '~/components/Link';
 import { Card } from '~/components/cards';
 import SecondaryTable from '~/components/SecondaryTable';
+import { Table } from '~/components/tables';
+import { ButtonCell } from '~/components/tables/cells';
 import { NodebalancerStatusReadable } from '~/constants';
-import { renderDatacenterStyle } from '~/linodes/components/Linode';
-import { title } from '~/profile/integrations/components/AuthorizedApplication.js';
+import Datacenter from '~/linodes/components/Datacenter';
 
 
 export class IndexPage extends Component {
@@ -26,7 +28,6 @@ export class IndexPage extends Component {
 
   constructor(props) {
     super(props);
-    this.renderDatacenterStyle = renderDatacenterStyle.bind(this);
     this._componentWillReceiveProps((state) => {
       this.state = {
         ...state,
@@ -71,9 +72,9 @@ export class IndexPage extends Component {
       return {
         ...config,
         protocol: config.protocol.toUpperCase(),
-        algorithm: title(config.algorithm),
-        stickiness: title(config.stickiness),
-        check: title(config.check),
+        algorithm: _.capitalize(config.algorithm),
+        stickiness: _.capitalize(config.stickiness),
+        check: _.capitalize(config.check),
         statusString: '0 up, 0 down',
         edit: <Link
           to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
@@ -85,10 +86,22 @@ export class IndexPage extends Component {
     });
 
     return (
-      <SecondaryTable
-        labels={labels}
-        keys={keys}
-        rows={newConfigs}
+      <Table
+        className="Table--secondary"
+        columns={[
+          { dataKey: 'port', label: 'Port' },
+          { dataKey: 'protocol', label: 'Protocol' },
+          { dataKey: 'algorithm', label: 'Algorithm' },
+          { dataKey: 'stickiness', label: 'Session stickiness' },
+          { dataKey: 'check', label: 'Health check method' },
+          { dataKey: 'statusString', label: 'Node status' },
+          {
+            cellComponent: ButtonCell,
+            onClick: () => {}, // TODO
+            text: 'Edit',
+          },
+        ]}
+        data={newConfigs}
       />
     );
   }
@@ -138,7 +151,7 @@ export class IndexPage extends Component {
                 Datacenter
               </div>
               <div className="col-sm-11">
-                {this.renderDatacenterStyle(nodebalancer)}
+                <Datacenter obj={nodebalancer} />
               </div>
             </div>
           </Card>
@@ -173,5 +186,6 @@ function select(state) {
     nodebalancers: state.api.nodebalancers,
   };
 }
+
 export default connect(select)(IndexPage);
 
