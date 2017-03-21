@@ -69,7 +69,7 @@ export class IndexPage extends Component {
           {
             className: 'RowLabelCell',
             cellComponent: LinkCell,
-            hrefFn: (nodebalancer) => { return `/nodebalancer/${nodebalancer.label}`; },
+            hrefFn: (nodebalancer) => { return `/nodebalancers/${nodebalancer.label}`; },
           },
           { cellComponent: IPAddressCell },
           { cellComponent: DatacenterCell },
