@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import _ from 'lodash';
 
 import { getObjectByLabelLazily, objectFromMapByLabel } from '~/api/util';
 import { nodebalancers } from '~/api';
@@ -9,6 +8,8 @@ import { nodebalancers } from '~/api';
 import { reduceErrors } from '~/errors';
 import { Card } from '~/components/cards';
 import { setError } from '~/actions/errors';
+import { setSource } from '~/actions/source';
+import { setTitle } from '~/actions/title';
 import { ConfigForm } from '../components/ConfigForm';
 
 export class EditConfigPage extends Component {
@@ -32,13 +33,16 @@ export class EditConfigPage extends Component {
     };
   }
 
+  async componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(setSource(__filename));
+
+    dispatch(setTitle('Nodebalancers'));
+  }
+
   async saveChanges(stateValues) {
-    const { dispatch, apiNodebalancers } = this.props;
-    const { nbLabel, configId } = this.props.params;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
-    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
-      return o.port === parseInt(configId);
-    });
+    const { config, dispatch, nbLabel, nodebalancer } = this.props;
+
     const {
       port,
       protocol,
@@ -58,34 +62,30 @@ export class EditConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval: parseInt(checkInterval),
-      check_timeout: parseInt(checkTimeout),
-      check_attempts: parseInt(checkAttempts),
+      check_interval: checkInterval,
+      check_timeout: checkTimeout,
+      check_attempts: checkAttempts,
     };
     try {
-      await dispatch(nodebalancers.configs.put(data, nodebalancer.id, nodebalancerConfigId));
+      await dispatch(nodebalancers.configs.put(data, nodebalancer.id, config.id));
       this.setState({ loading: false });
-      dispatch(push(`/nodebalancers/${nbLabel}`));
+      await dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
-      // Promisify the setState call so we can await it in tests.
-      await new Promise(async (resolve) => this.setState({
-        loading: false,
-        errors: Object.freeze(await reduceErrors(response)),
-      }, resolve));
+      const errors = await reduceErrors(response);
+      this.setState({ errors, loading: false });
     }
   }
 
   render() {
-    const { nbLabel, configId } = this.props.params;
-    const { apiNodebalancers } = this.props;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
-    if (!nodebalancer) {
+    const { config, nbLabel, nodebalancer, port } = this.props;
+    const { loading, errors } = this.state;
+    console.log('nodebalancer from editconfigpage', nodebalancer);
+    console.log('config from editconfigpage', config);
+
+    if (!config) {
       return null;
     }
-    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
-      return o.port === parseInt(configId);
-    });
-    const { loading, errors } = this.state;
+
     return (
       <div>
         <header className="main-header main-header--border">
@@ -98,26 +98,29 @@ export class EditConfigPage extends Component {
         <div className="container">
           <Card title="Edit Configuration">
             <div>
-              <h4 className="text-muted">
+              <p>
                 Configure how your NodeBalancer listens for incoming traffic
-                and connects to backend nodes. <a href="#">Learn more.</a>
-              </h4>
+                and connects to backend nodes.
+                {/* eslint-disable max-len */}
+                <a href="https://www.linode.com/docs/platform/nodebalancer/getting-started-with-nodebalancers#configuring-a-nodebalancer" target="_blank">Learn more.</a>
+                {/* eslint-enable max-len */}
+              </p>
             </div>
             <ConfigForm
               saveChanges={this.saveChanges}
               loading={loading}
               errors={errors}
               submitText="Edit Configuration"
-              port={parseInt(configId)}
-              protocol={nodebalancer.protocol}
-              algorithm={nodebalancer.algorithm}
-              stickiness={nodebalancer.stickiness}
-              check={nodebalancer.check}
-              checkPassive={nodebalancer.check_passive}
-              checkInterval={nodebalancer.check_interval}
-              checkTimeout={nodebalancer.check_timeout}
-              checkAttempts={nodebalancer.check_attempts}
-              nodebalancerConfigId={nodebalancerConfigId}
+              port={port}
+              protocol={config.protocol}
+              algorithm={config.algorithm}
+              stickiness={config.stickiness}
+              check={config.check}
+              checkPassive={config.check_passive}
+              checkInterval={config.check_interval}
+              checkTimeout={config.check_timeout}
+              checkAttempts={config.check_attempts}
+              nodebalancerConfigId={config.id}
             />
           </Card>
         </div>
@@ -128,15 +131,25 @@ export class EditConfigPage extends Component {
 
 EditConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  apiNodebalancers: PropTypes.object,
-  params: PropTypes.any,
-  configId: PropTypes.any,
+  config: PropTypes.object,
   nbLabel: PropTypes.string,
+  nodebalancer: PropTypes.object,
+  port: PropTypes.number,
 };
 
-function select(state) {
+function select(state, ownProps) {
+  const params = ownProps.params;
+  const nbLabel = params.nbLabel;
+  const port = parseInt(params.port);
+
+  const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
+  const config = objectFromMapByLabel(nodebalancer._configs.configs, port, 'port');
+
   return {
-    apiNodebalancers: state.api.nodebalancers,
+    nbLabel: nbLabel,
+    port: port,
+    nodebalancer: nodebalancer,
+    config: config,
   };
 }
 export default connect(select)(EditConfigPage);

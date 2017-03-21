@@ -11,7 +11,8 @@ export default (
     <Route path="configs">
       <IndexRedirect to=".." />
       <Route path="create" component={AddConfigPage} />
-      <Route path=":configId" component={EditConfigPage} />
+      <Route path=":port/edit" component={EditConfigPage} />
+      <Route path=":port" component={EditConfigPage} />
     </Route>
   </Route>
 );

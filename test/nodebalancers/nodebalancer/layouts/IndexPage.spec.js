@@ -21,7 +21,11 @@ describe('nodebalancers/nodebalancer/IndexPage', () => {
     const testNodebalancers = nodebalancers;
     const nbLabel = testNodebalancers.nodebalancers[0].label;
     const page = mount(
-      <IndexPage dispatch={dispatch} params={{ nbLabel }} nodebalancers={testNodebalancers} />
+      <IndexPage
+        dispatch={dispatch}
+        params={{ nbLabel }}
+        nodebalancer={testNodebalancers.nodebalancers[0]}
+      />
     );
     const firstRow = page.find('tr').at(1);
     const secondRow = page.find('tr').at(2);
@@ -39,3 +43,4 @@ describe('nodebalancers/nodebalancer/IndexPage', () => {
     expect(secondRenderedPort).to.equal('81');
   });
 });
+

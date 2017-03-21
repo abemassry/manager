@@ -28,6 +28,7 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
     const page = await mount(
       <EditConfigPage
         {...props}
+        nodebalancer={nodebalancers.nodebalancers[0]}
         apiNodebalancers={nodebalancers}
         dispatch={dispatch}
       />
@@ -45,14 +46,14 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
 
     };
     await page.instance().saveChanges(values);
-    expect(dispatch.calledTwice).to.equal(true);
-    const fn = dispatch.firstCall.args[0];
+    expect(dispatch.callCount).to.equal(4);
+    const fn = dispatch.thirdCall.args[0];
     const nbId = nodebalancers.nodebalancers[0].id;
     const nbConfigId = nodebalancers.nodebalancers[0]._configs.configs[1].id;
     const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}`;
     await expectRequest(
       fn, testPath,
-      undefined, undefined, {
+      {
         method: 'PUT',
         body: { values },
       }

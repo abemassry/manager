@@ -8,6 +8,8 @@ import { nodebalancers } from '~/api';
 import { reduceErrors } from '~/errors';
 import { Card } from '~/components/cards';
 import { setError } from '~/actions/errors';
+import { setSource } from '~/actions/source';
+import { setTitle } from '~/actions/title';
 import { ConfigForm } from '../components/ConfigForm';
 
 export class AddConfigPage extends Component {
@@ -31,10 +33,16 @@ export class AddConfigPage extends Component {
     };
   }
 
+  async componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(setSource(__filename));
+
+    dispatch(setTitle('Nodebalancers'));
+  }
+
   async saveChanges(stateValues) {
-    const { dispatch, apiNodebalancers } = this.props;
-    const { nbLabel } = this.props.params;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
+    const { dispatch, nbLabel, nodebalancer } = this.props;
+
     const {
       port,
       protocol,
@@ -42,9 +50,9 @@ export class AddConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval,
-      check_timeout,
-      check_attempts,
+      checkInterval,
+      checkTimeout,
+      checkAttempts,
     } = stateValues;
     this.setState({ loading: true, errors: {} });
     const data = {
@@ -54,26 +62,25 @@ export class AddConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval: parseInt(check_interval),
-      check_timeout: parseInt(check_timeout),
-      check_attempts: parseInt(check_attempts),
+      check_interval: checkInterval,
+      check_timeout: checkTimeout,
+      check_attempts: checkAttempts,
     };
+    console.log('nodebalancers from AddConfigPage', nodebalancers);
     try {
       await dispatch(nodebalancers.configs.post(data, nodebalancer.id));
       this.setState({ loading: false });
       dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
-      // Promisify the setState call so we can await it in tests.
-      await new Promise(async (resolve) => this.setState({
-        loading: false,
-        errors: Object.freeze(await reduceErrors(response)),
-      }, resolve));
+      const errors = await reduceErrors(response);
+      this.setState({ errors, loading: false });
     }
   }
 
   render() {
-    const { nbLabel } = this.props.params;
+    const { nbLabel } = this.props;
     const { loading, errors } = this.state;
+
     return (
       <div>
         <header className="main-header main-header--border">
@@ -86,10 +93,10 @@ export class AddConfigPage extends Component {
         <div className="container">
           <Card title="Add Configuration">
             <div>
-              <h4 className="text-muted">
+              <p>
                 Configure how your NodeBalancer listens for incoming traffic
                 and connects to backend nodes. <a href="#">Learn more.</a>
-              </h4>
+              </p>
             </div>
             <ConfigForm
               saveChanges={this.saveChanges}
@@ -106,15 +113,23 @@ export class AddConfigPage extends Component {
 
 AddConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  apiNodebalancers: PropTypes.object,
-  params: PropTypes.any,
   id: PropTypes.any,
   label: PropTypes.string,
+  nbLabel: PropTypes.string,
+  nodebalancer: PropTypes.object,
 };
 
-function select(state) {
+function select(state, ownProps) {
+  const params = ownProps.params;
+  const nbLabel = params.nbLabel;
+
+  const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
+
   return {
-    apiNodebalancers: state.api.nodebalancers,
+    nbLabel: nbLabel,
+    nodebalancer: nodebalancer,
   };
 }
+
 export default connect(select)(AddConfigPage);
+
