@@ -7,7 +7,6 @@ import { getObjectByLabelLazily } from '~/api/util';
 import { setError } from '~/actions/errors';
 import { Link } from '~/components/Link';
 import { Card } from '~/components/cards';
-import SecondaryTable from '~/components/SecondaryTable';
 import { Table } from '~/components/tables';
 import { ButtonCell } from '~/components/tables/cells';
 import { NodebalancerStatusReadable } from '~/constants';
@@ -50,24 +49,6 @@ export class IndexPage extends Component {
 
   renderConfigs(configs) {
     const { nbLabel } = this.props.params;
-    const labels = [
-      'Port',
-      'Protocol',
-      'Algorithm',
-      'Session stickiness',
-      'Health check method',
-      'Node status',
-      '',
-    ];
-    const keys = [
-      'port',
-      'protocol',
-      'algorithm',
-      'stickiness',
-      'check',
-      'statusString',
-      'edit',
-    ];
     const newConfigs = configs.map((config) => {
       return {
         ...config,
