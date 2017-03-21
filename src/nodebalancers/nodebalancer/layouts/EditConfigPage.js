@@ -37,8 +37,6 @@ export class EditConfigPage extends Component {
     const { nbLabel, configId } = this.props.params;
     const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
     const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
-      console.log('o.port', o.port);
-      console.log('configId', configId);
       return o.port === parseInt(configId);
     });
     const {
@@ -64,9 +62,6 @@ export class EditConfigPage extends Component {
       check_timeout: parseInt(checkTimeout),
       check_attempts: parseInt(checkAttempts),
     };
-    console.log('data', data);
-    console.log('nodebalancer.id', nodebalancer.id);
-    console.log('nodebalancerConfigId', nodebalancerConfigId);
     try {
       await dispatch(nodebalancers.configs.put(data, nodebalancer.id, nodebalancerConfigId));
       this.setState({ loading: false });
@@ -90,7 +85,6 @@ export class EditConfigPage extends Component {
     const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
       return o.port === parseInt(configId);
     });
-    console.log('this');
     const { loading, errors } = this.state;
     return (
       <div>
