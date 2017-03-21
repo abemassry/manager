@@ -88,7 +88,7 @@ export class ConfigForm extends Component {
               <option value="source">Source IP</option>
             </Select>
             <div className="text-muted">
-              Configure how initial client connections are allocated acress backend nodes.
+              Configure how initial client connections are allocated across backend nodes.
             </div>
           </div>
           <FormGroupError errors={errors} name="algorithm" />
