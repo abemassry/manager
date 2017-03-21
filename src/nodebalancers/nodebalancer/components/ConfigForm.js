@@ -48,7 +48,7 @@ export class ConfigForm extends Component {
       >
         <FormGroup errors={errors} name="port" className="row">
           <label className="col-sm-2 col-form-label">Port</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Input
               id="config-port"
               placeholder="0"
@@ -60,7 +60,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="protocol" className="row">
           <label className="col-sm-2 col-form-label">Protocol</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Select
               id="config-protocol"
               value={protocol}
@@ -76,7 +76,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="algorithm" className="row">
           <label className="col-sm-2 col-form-label">Algorithm</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Select
               id="config-algorithm"
               value={algorithm}
@@ -95,7 +95,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="stickiness" className="row">
           <label className="col-sm-2 col-form-label">Session Stickiness</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Select
               id="config-stickiness"
               value={stickiness}
@@ -115,7 +115,7 @@ export class ConfigForm extends Component {
         <h3 className="sub-header">Active Health Check</h3>
         <FormGroup errors={errors} name="check" className="row">
           <label className="col-sm-2 col-form-label">Health check type</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Select
               id="config-check"
               value={check}
@@ -134,7 +134,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="check_interval" className="row">
           <label className="col-sm-2 col-form-label">Interval</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Input
               id="config-check_interval"
               placeholder="0"
@@ -147,7 +147,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="check_timeout" className="row">
           <label className="col-sm-2 col-form-label">Timeout</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Input
               id="config-check_timeout"
               placeholder="0"
@@ -160,7 +160,7 @@ export class ConfigForm extends Component {
         </FormGroup>
         <FormGroup errors={errors} name="check_attempts" className="row">
           <label className="col-sm-2 col-form-label">Attempts</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Input
               id="config-check_attempts"
               placeholder="0"
@@ -176,7 +176,7 @@ export class ConfigForm extends Component {
         <h3 className="sub-header">Passive Checks</h3>
         <FormGroup errors={errors} name="check_passive" className="row">
           <label className="col-sm-2 col-form-label">Enabled</label>
-          <div className="col-sm-6">
+          <div className="col-sm-10">
             <Checkbox
               id="config-check_passive"
               checked={!!checkPassive}
