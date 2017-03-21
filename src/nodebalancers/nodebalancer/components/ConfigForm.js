@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { renderDatacenterStyle } from '~/linodes/components/Linode';
 import { Form,
   FormGroup,
   FormGroupError,
@@ -13,7 +12,6 @@ import { SubmitButton } from '~/components/form';
 export class ConfigForm extends Component {
   constructor(props) {
     super(props);
-    this.renderDatacenterStyle = renderDatacenterStyle.bind(this);
     this.state = {
       saving: false,
       port: props.port,
