@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import _ from 'lodash';
 
-import { getObjectByLabelLazily } from '~/api/util';
+import { getObjectByLabelLazily, objectFromMapByLabel } from '~/api/util';
 import { nodebalancers } from '~/api';
 
 import { reduceErrors } from '~/errors';
@@ -33,7 +33,14 @@ export class EditConfigPage extends Component {
   }
 
   async saveChanges(stateValues) {
-    const { dispatch, id, label } = this.props;
+    const { dispatch, apiNodebalancers } = this.props;
+    const { nbLabel, configId } = this.props.params;
+    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
+    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
+      console.log('o.port', o.port);
+      console.log('configId', configId);
+      return o.port === parseInt(configId);
+    });
     const {
       port,
       protocol,
@@ -41,10 +48,9 @@ export class EditConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval,
-      check_timeout,
-      check_attempts,
-      nodebalancerConfigId,
+      checkInterval,
+      checkTimeout,
+      checkAttempts,
     } = stateValues;
     this.setState({ loading: true, errors: {} });
     const data = {
@@ -54,14 +60,17 @@ export class EditConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval: parseInt(check_interval),
-      check_timeout: parseInt(check_timeout),
-      check_attempts: parseInt(check_attempts),
+      check_interval: parseInt(checkInterval),
+      check_timeout: parseInt(checkTimeout),
+      check_attempts: parseInt(checkAttempts),
     };
+    console.log('data', data);
+    console.log('nodebalancer.id', nodebalancer.id);
+    console.log('nodebalancerConfigId', nodebalancerConfigId);
     try {
-      await dispatch(nodebalancers.configs.put(data, id, nodebalancerConfigId));
+      await dispatch(nodebalancers.configs.put(data, nodebalancer.id, nodebalancerConfigId));
       this.setState({ loading: false });
-      dispatch(push(`/nodebalancers/${label}`));
+      dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
       // Promisify the setState call so we can await it in tests.
       await new Promise(async (resolve) => this.setState({
@@ -73,16 +82,15 @@ export class EditConfigPage extends Component {
 
   render() {
     const { nbLabel, configId } = this.props.params;
-    const { nodebalancers, id } = this.props;
-    const nodebalancerConfigId = _.findKey(nodebalancers
-                                           .nodebalancers[id]
-                                           ._configs.configs, (o) => {
-      return o.port === parseInt(configId);
-    });
-    const nodebalancer = nodebalancers.nodebalancers[id]._configs.configs[nodebalancerConfigId];
+    const { apiNodebalancers } = this.props;
+    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
     if (!nodebalancer) {
       return null;
     }
+    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
+      return o.port === parseInt(configId);
+    });
+    console.log('this');
     const { loading, errors } = this.state;
     return (
       <div>
@@ -106,7 +114,7 @@ export class EditConfigPage extends Component {
               loading={loading}
               errors={errors}
               submitText="Edit Configuration"
-              port={configId}
+              port={parseInt(configId)}
               protocol={nodebalancer.protocol}
               algorithm={nodebalancer.algorithm}
               stickiness={nodebalancer.stickiness}
@@ -126,19 +134,15 @@ export class EditConfigPage extends Component {
 
 EditConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  nodebalancers: PropTypes.object,
+  apiNodebalancers: PropTypes.object,
   params: PropTypes.any,
-  id: PropTypes.any,
-  label: PropTypes.string,
+  configId: PropTypes.any,
+  nbLabel: PropTypes.string,
 };
 
 function select(state) {
-  const nodebalancer = state.api.nodebalancers
-    .nodebalancers[Object.keys(state.api.nodebalancers.nodebalancers)];
   return {
-    nodebalancers: state.api.nodebalancers,
-    id: nodebalancer.id,
-    label: nodebalancer.label,
+    apiNodebalancers: state.api.nodebalancers,
   };
 }
 export default connect(select)(EditConfigPage);
