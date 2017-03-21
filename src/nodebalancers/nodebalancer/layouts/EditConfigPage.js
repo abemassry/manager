@@ -98,10 +98,10 @@ export class EditConfigPage extends Component {
         <div className="container">
           <Card title="Edit Configuration">
             <div>
-              <h4 className="text-muted">
+              <p>
                 Configure how your NodeBalancer listens for incoming traffic
                 and connects to backend nodes. <a href="#">Learn more.</a>
-              </h4>
+              </p>
             </div>
             <ConfigForm
               saveChanges={this.saveChanges}
