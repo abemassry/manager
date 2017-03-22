@@ -76,11 +76,8 @@ export class EditConfigPage extends Component {
       this.setState({ loading: false });
       dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
-      // Promisify the setState call so we can await it in tests.
-      await new Promise(async (resolve) => this.setState({
-        loading: false,
-        errors: Object.freeze(await reduceErrors(response)),
-      }, resolve));
+      const errors = await reduceErrors(response);
+      this.setState({ errors, loading: false });
     }
   }
 
