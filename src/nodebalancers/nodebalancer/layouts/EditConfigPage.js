@@ -106,7 +106,10 @@ export class EditConfigPage extends Component {
             <div>
               <p>
                 Configure how your NodeBalancer listens for incoming traffic
-                and connects to backend nodes. <a href="#">Learn more.</a>
+                and connects to backend nodes.
+                {/* eslint-disable max-len */}
+                <a href="https://www.linode.com/docs/platform/nodebalancer/getting-started-with-nodebalancers#configuring-a-nodebalancer" target="_blank">Learn more.</a>
+                {/* eslint-enable max-len */}
               </p>
             </div>
             <ConfigForm

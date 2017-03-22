@@ -51,9 +51,9 @@ export class AddConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval,
-      check_timeout,
-      check_attempts,
+      checkInterval,
+      checkTimeout,
+      checkAttempts,
     } = stateValues;
     this.setState({ loading: true, errors: {} });
     const data = {
@@ -63,9 +63,9 @@ export class AddConfigPage extends Component {
       stickiness,
       check,
       check_passive,
-      check_interval: parseInt(check_interval),
-      check_timeout: parseInt(check_timeout),
-      check_attempts: parseInt(check_attempts),
+      check_interval: parseInt(checkInterval),
+      check_timeout: parseInt(checkTimeout),
+      check_attempts: parseInt(checkAttempts),
     };
     try {
       await dispatch(nodebalancers.configs.post(data, nodebalancer.id));
