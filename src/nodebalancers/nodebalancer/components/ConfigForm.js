@@ -25,6 +25,15 @@ export class ConfigForm extends Component {
       checkAttempts: props.checkAttempts,
     };
   }
+  onChange = ({ target: { name, value } }) => {
+    if (name === 'checkPassive' && value === 'true') {
+      this.setState({ checkPassive: false });
+    } else if (name === 'checkPassive' && value === 'false') {
+      this.setState({ checkPassive: true });
+    } else {
+      this.setState({ [name]: value });
+    }
+  };
 
   render() {
     const { saveChanges, loading, errors, submitText, nodebalancerConfigId } = this.props;
@@ -51,9 +60,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Input
               id="config-port"
+              name="port"
               placeholder="0"
               value={port}
-              onChange={e => this.setState({ port: e.target.value })}
+              onChange={this.onChange}
             />
             <FormGroupError errors={errors} name="port" />
           </div>
@@ -63,9 +73,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Select
               id="config-protocol"
+              name="protocol"
               value={protocol}
               disabled={loading}
-              onChange={e => this.setState({ protocol: e.target.value })}
+              onChange={this.onChange}
             >
               <option value="http">HTTP</option>
               <option value="https">HTTPS</option>
@@ -79,9 +90,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Select
               id="config-algorithm"
+              name="algorithm"
               value={algorithm}
               disabled={loading}
-              onChange={e => this.setState({ algorithm: e.target.value })}
+              onChange={this.onChange}
             >
               <option value="roundrobin">Round Robin</option>
               <option value="leastconn">Least Connections</option>
@@ -98,9 +110,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Select
               id="config-stickiness"
+              name="stickiness"
               value={stickiness}
               disabled={loading}
-              onChange={e => this.setState({ stickiness: e.target.value })}
+              onChange={this.onChange}
             >
               <option value="none">Table</option>
               <option value="http_cookie">HTTP Cookie</option>
@@ -118,9 +131,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Select
               id="config-check"
+              name="check"
               value={check}
               disabled={loading}
-              onChange={e => this.setState({ check: e.target.value })}
+              onChange={this.onChange}
             >
               <option value="connection">TCP Connection</option>
               <option value="http">HTTP Valid Status</option>
@@ -137,9 +151,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Input
               id="config-check_interval"
+              name="checkInterval"
               placeholder="0"
               value={checkInterval}
-              onChange={e => this.setState({ checkInterval: e.target.value })}
+              onChange={this.onChange}
             />
             <span className="text-muted">seconds</span>
             <FormGroupError errors={errors} name="check_interval" />
@@ -150,9 +165,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Input
               id="config-check_timeout"
+              name="checkTimeout"
               placeholder="0"
               value={checkTimeout}
-              onChange={e => this.setState({ checkTimeout: e.target.value })}
+              onChange={this.onChange}
             />
             <span className="text-muted">seconds</span>
             <FormGroupError errors={errors} name="check_timeout" />
@@ -163,9 +179,10 @@ export class ConfigForm extends Component {
           <div className="col-sm-10">
             <Input
               id="config-check_attempts"
+              name="checkAttempts"
               placeholder="0"
               value={checkAttempts}
-              onChange={e => this.setState({ checkAttempts: e.target.value })}
+              onChange={this.onChange}
             />
             <div className="text-muted">
               Take this node out of rotation after this number of failed health checks
@@ -178,13 +195,13 @@ export class ConfigForm extends Component {
           <label className="col-sm-2 col-form-label">Enabled</label>
           <div className="col-sm-10">
             <Checkbox
+              label="Enable passive checks based on observed communication with backend nodes."
               id="config-check_passive"
+              name="checkPassive"
               checked={!!checkPassive}
-              onChange={() => this.setState({ checkPassive: !checkPassive })}
+              value={!!checkPassive}
+              onChange={this.onChange}
             />
-            <div className="text-muted">
-              Enable passive checks based on observed communication with backend nodes.
-            </div>
           </div>
           <FormGroupError errors={errors} name="check_passive" />
         </FormGroup>

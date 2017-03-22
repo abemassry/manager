@@ -9,6 +9,8 @@ import { nodebalancers } from '~/api';
 import { reduceErrors } from '~/errors';
 import { Card } from '~/components/cards';
 import { setError } from '~/actions/errors';
+import { setSource } from '~/actions/source';
+import { setTitle } from '~/actions/title';
 import { ConfigForm } from '../components/ConfigForm';
 
 export class EditConfigPage extends Component {
@@ -30,6 +32,13 @@ export class EditConfigPage extends Component {
       loading: false,
       errors: {},
     };
+  }
+
+  async componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(setSource(__filename));
+
+    dispatch(setTitle('Nodebalancers'));
   }
 
   async saveChanges(stateValues) {

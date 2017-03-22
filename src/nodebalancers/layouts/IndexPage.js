@@ -33,7 +33,7 @@ export class IndexPage extends Component {
     const { dispatch } = this.props;
     dispatch(setSource(__filename));
 
-    dispatch(setTitle('NodeBalancers'));
+    dispatch(setTitle('Nodebalancers'));
   }
 
   deleteNodeBalancer = (zoneId) => {

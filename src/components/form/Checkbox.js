@@ -10,6 +10,7 @@ export default function Checkbox(props) {
           value={props.value}
           checked={props.checked}
           onChange={props.onChange}
+          name={props.name}
           className="Checkbox-input"
         />
         {props.label ? <span className="col-form-label Checkbox-label">{props.label}</span> : null}
@@ -23,6 +24,7 @@ Checkbox.propTypes = {
   onChange: PropTypes.func,
   className: PropTypes.string,
   label: PropTypes.string,
+  name: PropTypes.string,
   value: PropTypes.bool,
   id: PropTypes.string,
 };

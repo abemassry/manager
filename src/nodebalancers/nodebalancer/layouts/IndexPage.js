@@ -5,10 +5,12 @@ import _ from 'lodash';
 import { nodebalancers } from '~/api';
 import { getObjectByLabelLazily } from '~/api/util';
 import { setError } from '~/actions/errors';
+import { setSource } from '~/actions/source';
+import { setTitle } from '~/actions/title';
 import { Link } from '~/components/Link';
 import { Card } from '~/components/cards';
 import { Table } from '~/components/tables';
-import { ButtonCell } from '~/components/tables/cells';
+import { LinkCell, ButtonCell } from '~/components/tables/cells';
 import { NodebalancerStatusReadable } from '~/constants';
 import Datacenter from '~/linodes/components/Datacenter';
 
@@ -37,6 +39,13 @@ export class IndexPage extends Component {
     this.componentWillReceiveProps = this._componentWillReceiveProps();
   }
 
+  async componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(setSource(__filename));
+
+    dispatch(setTitle('Nodebalancers'));
+  }
+
   _componentWillReceiveProps(_setState) {
     const setState = _setState || this.setState.bind(this);
     return (nextProps) => {
@@ -57,12 +66,6 @@ export class IndexPage extends Component {
         stickiness: _.capitalize(config.stickiness),
         check: _.capitalize(config.check),
         statusString: '0 up, 0 down',
-        edit: <Link
-          to={`/nodebalancers/${nbLabel}/configs/${config.port}`}
-          className="btn btn-default"
-        >
-            Edit
-        </Link>,
       };
     });
 
@@ -70,7 +73,12 @@ export class IndexPage extends Component {
       <Table
         className="Table--secondary"
         columns={[
-          { dataKey: 'port', label: 'Port' },
+          { textKey: 'port', label: 'Port',
+            cellComponent: LinkCell,
+            hrefFn: function (config) {
+              return `/nodebalancers/${nbLabel}/configs/${config.port}`;
+            },
+          },
           { dataKey: 'protocol', label: 'Protocol' },
           { dataKey: 'algorithm', label: 'Algorithm' },
           { dataKey: 'stickiness', label: 'Session stickiness' },
@@ -78,7 +86,9 @@ export class IndexPage extends Component {
           { dataKey: 'statusString', label: 'Node status' },
           {
             cellComponent: ButtonCell,
-            onClick: () => {}, // TODO
+            hrefFn: function (config) {
+              return `/nodebalancers/${nbLabel}/configs/${config.port}`;
+            },
             text: 'Edit',
           },
         ]}

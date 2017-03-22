@@ -43,8 +43,8 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
       check: 'none',
     };
     await page.instance().saveChanges(values);
-    expect(dispatch.calledTwice).to.equal(true);
-    const fn = dispatch.firstCall.args[0];
+    expect(dispatch.callCount).to.equal(4);
+    const fn = dispatch.thirdCall.args[0];
     await expectRequest(
       fn, `/nodebalancers/${nodebalancers.nodebalancers[0].id}/configs/`,
       undefined, undefined, {
