@@ -79,7 +79,11 @@ export class EditConfigPage extends Component {
   render() {
     const { config, nbLabel, nodebalancer, port } = this.props;
     const { loading, errors } = this.state;
-    console.log('render', config);
+
+    if (!config) {
+      return null;
+    }
+
     return (
       <div>
         <header className="main-header main-header--border">
