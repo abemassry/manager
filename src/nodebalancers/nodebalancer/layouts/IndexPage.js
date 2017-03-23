@@ -87,7 +87,7 @@ export class IndexPage extends Component {
           {
             cellComponent: ButtonCell,
             hrefFn: function (config) {
-              return `/nodebalancers/${nbLabel}/configs/${config.port}`;
+              return `/nodebalancers/${nbLabel}/configs/${config.port}/edit`;
             },
             text: 'Edit',
           },

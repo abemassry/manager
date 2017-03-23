@@ -42,9 +42,8 @@ export class EditConfigPage extends Component {
   }
 
   async saveChanges(stateValues) {
-    const { dispatch, apiNodebalancers } = this.props;
+    const { dispatch, apiNodebalancers, nodebalancer } = this.props;
     const { nbLabel, configId } = this.props.params;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
     const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
       return o.port === parseInt(configId);
     });
@@ -83,8 +82,7 @@ export class EditConfigPage extends Component {
 
   render() {
     const { nbLabel, configId } = this.props.params;
-    const { apiNodebalancers } = this.props;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
+    const { apiNodebalancers, nodebalancer } = this.props;
     if (!nodebalancer) {
       return null;
     }
@@ -146,6 +144,7 @@ EditConfigPage.propTypes = {
 function select(state) {
   return {
     apiNodebalancers: state.api.nodebalancers,
+    nodebalancer: objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel),
   };
 }
 export default connect(select)(EditConfigPage);
