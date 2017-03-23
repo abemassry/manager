@@ -28,6 +28,7 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
     const page = await mount(
       <EditConfigPage
         {...props}
+        nodebalancer={nodebalancers.nodebalancers[0]}
         apiNodebalancers={nodebalancers}
         dispatch={dispatch}
       />
