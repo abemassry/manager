@@ -41,9 +41,8 @@ export class AddConfigPage extends Component {
   }
 
   async saveChanges(stateValues) {
-    const { dispatch, apiNodebalancers } = this.props;
-    const { nbLabel } = this.props.params;
-    const nodebalancer = objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel);
+    const { dispatch, nbLabel, nodebalancer } = this.props;
+
     const {
       port,
       protocol,
@@ -78,8 +77,9 @@ export class AddConfigPage extends Component {
   }
 
   render() {
-    const { nbLabel } = this.props.params;
+    const { nbLabel } = this.props;
     const { loading, errors } = this.state;
+
     return (
       <div>
         <header className="main-header main-header--border">
@@ -112,15 +112,22 @@ export class AddConfigPage extends Component {
 
 AddConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  apiNodebalancers: PropTypes.object,
-  params: PropTypes.any,
   id: PropTypes.any,
   label: PropTypes.string,
+  nbLabel: PropTypes.string,
+  nodebalancer: PropTypes.object,
 };
 
-function select(state) {
+function select(state, ownProps) {
+  const params = ownProps.params;
+  const nbLabel = params.nbLabel;
+
+  const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
+
   return {
-    apiNodebalancers: state.api.nodebalancers,
+    nbLabel: nbLabel,
+    nodebalancer: nodebalancer,
   };
 }
+
 export default connect(select)(AddConfigPage);

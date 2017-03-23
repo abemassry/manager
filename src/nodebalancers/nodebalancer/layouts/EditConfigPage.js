@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import _ from 'lodash';
 
 import { getObjectByLabelLazily, objectFromMapByLabel } from '~/api/util';
 import { nodebalancers } from '~/api';
@@ -42,11 +41,8 @@ export class EditConfigPage extends Component {
   }
 
   async saveChanges(stateValues) {
-    const { dispatch, apiNodebalancers, nodebalancer } = this.props;
-    const { nbLabel, configId } = this.props.params;
-    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
-      return o.port === parseInt(configId);
-    });
+    const { config, dispatch, nbLabel, nodebalancer } = this.props;
+
     const {
       port,
       protocol,
@@ -71,9 +67,9 @@ export class EditConfigPage extends Component {
       check_attempts: parseInt(checkAttempts),
     };
     try {
-      await dispatch(nodebalancers.configs.put(data, nodebalancer.id, nodebalancerConfigId));
+      await dispatch(nodebalancers.configs.put(data, nodebalancer.id, config.id));
       this.setState({ loading: false });
-      dispatch(push(`/nodebalancers/${nbLabel}`));
+      await dispatch(push(`/nodebalancers/${nbLabel}`));
     } catch (response) {
       const errors = await reduceErrors(response);
       this.setState({ errors, loading: false });
@@ -81,15 +77,9 @@ export class EditConfigPage extends Component {
   }
 
   render() {
-    const { nbLabel, configId } = this.props.params;
-    const { apiNodebalancers, nodebalancer } = this.props;
-    if (!nodebalancer) {
-      return null;
-    }
-    const nodebalancerConfigId = _.findKey(nodebalancer._configs.configs, (o) => {
-      return o.port === parseInt(configId);
-    });
+    const { config, nbLabel, nodebalancer, port } = this.props;
     const { loading, errors } = this.state;
+    console.log('render', config);
     return (
       <div>
         <header className="main-header main-header--border">
@@ -115,7 +105,7 @@ export class EditConfigPage extends Component {
               loading={loading}
               errors={errors}
               submitText="Edit Configuration"
-              port={parseInt(configId)}
+              port={port}
               protocol={nodebalancer.protocol}
               algorithm={nodebalancer.algorithm}
               stickiness={nodebalancer.stickiness}
@@ -124,7 +114,7 @@ export class EditConfigPage extends Component {
               checkInterval={nodebalancer.check_interval}
               checkTimeout={nodebalancer.check_timeout}
               checkAttempts={nodebalancer.check_attempts}
-              nodebalancerConfigId={nodebalancerConfigId}
+              nodebalancerConfigId={config.id}
             />
           </Card>
         </div>
@@ -135,16 +125,25 @@ export class EditConfigPage extends Component {
 
 EditConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  apiNodebalancers: PropTypes.object,
-  params: PropTypes.any,
-  configId: PropTypes.any,
+  config: PropTypes.object,
   nbLabel: PropTypes.string,
+  nodebalancer: PropTypes.object,
+  port: PropTypes.number,
 };
 
-function select(state) {
+function select(state, ownProps) {
+  const params = ownProps.params;
+  const nbLabel = params.nbLabel;
+  const port = parseInt(params.port);
+
+  const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
+  const config = objectFromMapByLabel(nodebalancer._configs.configs, port, 'port');
+
   return {
-    apiNodebalancers: state.api.nodebalancers,
-    nodebalancer: objectFromMapByLabel(apiNodebalancers.nodebalancers, nbLabel),
+    nbLabel: nbLabel,
+    port: port,
+    nodebalancer: nodebalancer,
+    config: config,
   };
 }
 export default connect(select)(EditConfigPage);

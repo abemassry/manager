@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 
 import { nodebalancers } from '~/api';
-import { getObjectByLabelLazily } from '~/api/util';
+import { getObjectByLabelLazily, objectFromMapByLabel } from '~/api/util';
 import { setError } from '~/actions/errors';
 import { setSource } from '~/actions/source';
 import { setTitle } from '~/actions/title';
@@ -29,14 +29,11 @@ export class IndexPage extends Component {
 
   constructor(props) {
     super(props);
-    this._componentWillReceiveProps((state) => {
-      this.state = {
-        ...state,
-        errors: {},
-        saving: false,
-      };
-    })(props);
-    this.componentWillReceiveProps = this._componentWillReceiveProps();
+
+    this.state = {
+      errors: {},
+      saving: false,
+    };
   }
 
   async componentDidMount() {
@@ -46,18 +43,9 @@ export class IndexPage extends Component {
     dispatch(setTitle('Nodebalancers'));
   }
 
-  _componentWillReceiveProps(_setState) {
-    const setState = _setState || this.setState.bind(this);
-    return (nextProps) => {
-      const { nodebalancers, params } = nextProps;
-      const nodebalancer = Object.values(nodebalancers.nodebalancers).filter(
-        n => n.label === params.nbLabel)[0];
-      setState({ nodebalancer });
-    };
-  }
-
   renderConfigs(configs) {
-    const { nbLabel } = this.props.params;
+    const { nbLabel } = this.props;
+
     const newConfigs = configs.map((config) => {
       return {
         ...config,
@@ -98,9 +86,9 @@ export class IndexPage extends Component {
   }
 
   render() {
-    const { nbLabel } = this.props.params;
-    const { nodebalancer } = this.state;
+    const { nbLabel, nodebalancer } = this.props;
     const { configs } = nodebalancer._configs;
+
     return (
       <div>
         <header className="main-header main-header--border">
@@ -168,13 +156,19 @@ export class IndexPage extends Component {
 
 IndexPage.propTypes = {
   dispatch: PropTypes.func,
-  nodebalancers: PropTypes.object,
-  params: PropTypes.any,
+  nbLabel: PropTypes.string,
+  nodebalancer: PropTypes.object,
 };
 
-function select(state) {
+function select(state, ownProps) {
+  const params = ownProps.params;
+  const nbLabel = params.nbLabel;
+
+  const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
+
   return {
-    nodebalancers: state.api.nodebalancers,
+    nbLabel: nbLabel,
+    nodebalancer: nodebalancer,
   };
 }
 
