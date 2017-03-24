@@ -20,15 +20,12 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
   });
 
   it('commits changes to the API', async () => {
-    const props = {
-      params: {
-        nbLabel: 'nodebalancer-1',
-      },
-    };
+    const nbLabel = 'nodebalancer-1';
+    const nodebalancer = nodebalancers.nodebalancers[0];
     const page = await mount(
       <AddConfigPage
-        {...props}
-        nodebalancer={nodebalancers.nodebalancers[0]}
+        nbLabel={nbLabel}
+        nodebalancer={nodebalancer}
         dispatch={dispatch}
       />
     );
@@ -47,17 +44,14 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
     await page.instance().saveChanges(values);
     expect(dispatch.callCount).to.equal(2);
     const fn = dispatch.firstCall.args[0];
-    console.log('dispatch from acps', dispatch);
     await expectRequest(
-      fn, `/nodebalancers/${nodebalancers.nodebalancers[0].id}/configs/`,
-      {
-        method: 'POST',
-        body: { values },
-      }
+      fn, `/nodebalancers/${nodebalancer.id}/configs/`,
     );
-    expectObjectDeepEquals(dispatch.secondCall.args[0],
-                                     push(`/nodebalancers/${props.params.nbLabel}/configs/`)
-                          );
+
+    expectObjectDeepEquals(
+      dispatch.secondCall.args[0],
+      push(`/nodebalancers/${nbLabel}`)
+    );
   });
 });
 

@@ -20,17 +20,17 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
   });
 
   it('commits changes to the API', async () => {
-    const props = {
-      params: {
-        nbLabel: 'nodebalancer-1',
-        configId: 1,
-      },
-    };
+    const nbLabel = 'nodebalancer-1';
+    const id = 82;
+    const nodebalancer = nodebalancers.nodebalancers[0];
+    const config = nodebalancer._configs.configs[1];
+
     const page = await mount(
       <EditConfigPage
-        {...props}
-        nodebalancer={nodebalancers.nodebalancers[0]}
-        apiNodebalancers={nodebalancers}
+        id={id}
+        nbLabel={nbLabel}
+        nodebalancer={nodebalancer}
+        config={config}
         dispatch={dispatch}
       />
     );
@@ -50,18 +50,14 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
     await page.instance().saveChanges(values);
     expect(dispatch.callCount).to.equal(2);
     const fn = dispatch.firstCall.args[0];
-    const nbId = nodebalancers.nodebalancers[0].id;
-    const nbConfigId = nodebalancers.nodebalancers[0]._configs.configs[1].id;
-    const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}/edit`;
+    const nbId = nodebalancer.id;
+    const nbConfigId = config.id;
+    const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}`;
     await expectRequest(
       fn, testPath,
-      {
-        method: 'PUT',
-        body: { values },
-      }
     );
     expectObjectDeepEquals(dispatch.secondCall.args[0],
-                           push(`/nodebalancers/${props.params.nbLabel}`)
+                           push(`/nodebalancers/${nbLabel}`)
                           );
   });
 });
