@@ -77,14 +77,8 @@ export class EditConfigPage extends Component {
   }
 
   render() {
-    const { config, nbLabel, nodebalancer, port } = this.props;
+    const { config, nbLabel } = this.props;
     const { loading, errors } = this.state;
-    console.log('nodebalancer from editconfigpage', nodebalancer);
-    console.log('config from editconfigpage', config);
-
-    if (!config) {
-      return null;
-    }
 
     return (
       <div>
@@ -99,10 +93,9 @@ export class EditConfigPage extends Component {
           <Card title="Edit Configuration">
             <div>
               <p>
-                Configure how your NodeBalancer listens for incoming traffic
-                and connects to backend nodes.
                 {/* eslint-disable max-len */}
-                <a href="https://www.linode.com/docs/platform/nodebalancer/getting-started-with-nodebalancers#configuring-a-nodebalancer" target="_blank">Learn more.</a>
+                Configure how your NodeBalancer listens for incoming traffic
+                and connects to backend nodes. <a href="https://www.linode.com/docs/platform/nodebalancer/getting-started-with-nodebalancers#configuring-a-nodebalancer" target="_blank">Learn more.</a>
                 {/* eslint-enable max-len */}
               </p>
             </div>
@@ -111,12 +104,12 @@ export class EditConfigPage extends Component {
               loading={loading}
               errors={errors}
               submitText="Edit Configuration"
-              port={port}
+              port={config.port}
               protocol={config.protocol}
               algorithm={config.algorithm}
               stickiness={config.stickiness}
               check={config.check}
-              checkPassive={config.check_passive}
+              checkPassive={!!config.check_passive}
               checkInterval={config.check_interval}
               checkTimeout={config.check_timeout}
               checkAttempts={config.check_attempts}
@@ -140,14 +133,14 @@ EditConfigPage.propTypes = {
 function select(state, ownProps) {
   const params = ownProps.params;
   const nbLabel = params.nbLabel;
-  const port = parseInt(params.port);
+  const id = parseInt(params.port);
 
   const nodebalancer = objectFromMapByLabel(state.api.nodebalancers.nodebalancers, nbLabel);
-  const config = objectFromMapByLabel(nodebalancer._configs.configs, port, 'port');
+  const config = objectFromMapByLabel(nodebalancer._configs.configs, id, 'id');
 
   return {
     nbLabel: nbLabel,
-    port: port,
+    id: id,
     nodebalancer: nodebalancer,
     config: config,
   };

@@ -2,8 +2,9 @@ import React from 'react';
 import sinon from 'sinon';
 import { mount } from 'enzyme';
 import { expect } from 'chai';
+import { push } from 'react-router-redux';
 
-import { expectRequest } from '@/common';
+import { expectRequest, expectObjectDeepEquals } from '@/common';
 import { api } from '@/data';
 import { AddConfigPage } from '~/nodebalancers/nodebalancer/layouts/AddConfigPage';
 
@@ -27,8 +28,7 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
     const page = await mount(
       <AddConfigPage
         {...props}
-        nodebalancers={nodebalancers.nodebalancers[0]}
-        apiNodebalancers={nodebalancers}
+        nodebalancer={nodebalancers.nodebalancers[0]}
         dispatch={dispatch}
       />
     );
@@ -43,9 +43,11 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
       port: 82,
       check: 'none',
     };
+    dispatch.reset();
     await page.instance().saveChanges(values);
-    expect(dispatch.callCount).to.equal(4);
-    const fn = dispatch.thirdCall.args[0];
+    expect(dispatch.callCount).to.equal(2);
+    const fn = dispatch.firstCall.args[0];
+    console.log('dispatch from acps', dispatch);
     await expectRequest(
       fn, `/nodebalancers/${nodebalancers.nodebalancers[0].id}/configs/`,
       {
@@ -53,6 +55,9 @@ describe('nodebalancers/nodebalancer/AddConfigPage', () => {
         body: { values },
       }
     );
+    expectObjectDeepEquals(dispatch.secondCall.args[0],
+                                     push(`/nodebalancers/${props.params.nbLabel}/configs/`)
+                          );
   });
 });
 

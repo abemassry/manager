@@ -232,7 +232,10 @@ function genThunkPut(config, actions) {
 }
 
 function genThunkPost(config, actions) {
-  return (resource, ...ids) => async (dispatch, getState) => {
+  return (resource, ...ids) => {
+    console.log('got to the genthunkpost before async');
+    return async (dispatch, getState) => {
+    console.log('got to the genthunkpost');
     const { token } = getState().authentication;
     const response = await fetch(token, config.endpoint(...ids, ''), {
       method: 'POST',
@@ -241,7 +244,7 @@ function genThunkPost(config, actions) {
     const json = await response.json();
     dispatch(actions.one(json, ...ids));
     return json;
-  };
+  };}
 }
 
 /**

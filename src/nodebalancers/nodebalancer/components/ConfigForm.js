@@ -12,7 +12,6 @@ import { SubmitButton } from '~/components/form';
 export class ConfigForm extends Component {
   constructor(props) {
     super(props);
-    console.log('props from configform', props);
     this.state = {
       saving: false,
       port: props.port,
@@ -26,14 +25,8 @@ export class ConfigForm extends Component {
       checkAttempts: props.checkAttempts,
     };
   }
-  onChange = ({ target: { name, value } }) => {
-    if (name === 'checkPassive' && value === 'true') {
-      this.setState({ checkPassive: false });
-    } else if (name === 'checkPassive' && value === 'false') {
-      this.setState({ checkPassive: true });
-    } else {
-      this.setState({ [name]: value });
-    }
+  onChange = ({ target: { checked, value, name, type } }) => {
+    this.setState({ [name]: type === 'checkbox' ? checked : value });
   };
 
   render() {
@@ -204,8 +197,8 @@ export class ConfigForm extends Component {
               label="Enable passive checks based on observed communication with backend nodes."
               id="config-check_passive"
               name="checkPassive"
-              checked={!!checkPassive}
-              value={!!checkPassive}
+              checked={checkPassive}
+              value={checkPassive}
               onChange={this.onChange}
             />
           </div>
@@ -232,7 +225,7 @@ ConfigForm.propTypes = {
   algorithm: PropTypes.string,
   stickiness: PropTypes.string,
   check: PropTypes.string,
-  checkPassive: PropTypes.any,
+  checkPassive: PropTypes.bool,
   checkInterval: PropTypes.number,
   checkTimeout: PropTypes.number,
   checkAttempts: PropTypes.number,

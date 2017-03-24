@@ -2,8 +2,9 @@ import React from 'react';
 import sinon from 'sinon';
 import { mount } from 'enzyme';
 import { expect } from 'chai';
+import { push } from 'react-router-redux';
 
-import { expectRequest } from '@/common';
+import { expectRequest, expectObjectDeepEquals } from '@/common';
 import { api } from '@/data';
 import { EditConfigPage } from '~/nodebalancers/nodebalancer/layouts/EditConfigPage';
 
@@ -22,7 +23,7 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
     const props = {
       params: {
         nbLabel: 'nodebalancer-1',
-        configId: 81,
+        configId: 1,
       },
     };
     const page = await mount(
@@ -45,12 +46,13 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
       check: 'none',
 
     };
+    dispatch.reset();
     await page.instance().saveChanges(values);
-    expect(dispatch.callCount).to.equal(4);
-    const fn = dispatch.thirdCall.args[0];
+    expect(dispatch.callCount).to.equal(2);
+    const fn = dispatch.firstCall.args[0];
     const nbId = nodebalancers.nodebalancers[0].id;
     const nbConfigId = nodebalancers.nodebalancers[0]._configs.configs[1].id;
-    const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}`;
+    const testPath = `/nodebalancers/${nbId}/configs/${nbConfigId}/edit`;
     await expectRequest(
       fn, testPath,
       {
@@ -58,5 +60,8 @@ describe('nodebalancers/nodebalancer/EditConfigPage', () => {
         body: { values },
       }
     );
+    expectObjectDeepEquals(dispatch.secondCall.args[0],
+                           push(`/nodebalancers/${props.params.nbLabel}`)
+                          );
   });
 });

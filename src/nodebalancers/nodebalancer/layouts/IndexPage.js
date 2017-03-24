@@ -64,7 +64,7 @@ export class IndexPage extends Component {
           { textKey: 'port', label: 'Port',
             cellComponent: LinkCell,
             hrefFn: function (config) {
-              return `/nodebalancers/${nbLabel}/configs/${config.port}`;
+              return `/nodebalancers/${nbLabel}/configs/${config.id}`;
             },
           },
           { dataKey: 'protocol', label: 'Protocol' },
@@ -75,7 +75,7 @@ export class IndexPage extends Component {
           {
             cellComponent: ButtonCell,
             hrefFn: function (config) {
-              return `/nodebalancers/${nbLabel}/configs/${config.port}/edit`;
+              return `/nodebalancers/${nbLabel}/configs/${config.id}/edit`;
             },
             text: 'Edit',
           },

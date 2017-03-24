@@ -66,7 +66,6 @@ export class AddConfigPage extends Component {
       check_timeout: checkTimeout,
       check_attempts: checkAttempts,
     };
-    console.log('nodebalancers from AddConfigPage', nodebalancers);
     try {
       await dispatch(nodebalancers.configs.post(data, nodebalancer.id));
       this.setState({ loading: false });
@@ -113,8 +112,6 @@ export class AddConfigPage extends Component {
 
 AddConfigPage.propTypes = {
   dispatch: PropTypes.func,
-  id: PropTypes.any,
-  label: PropTypes.string,
   nbLabel: PropTypes.string,
   nodebalancer: PropTypes.object,
 };
