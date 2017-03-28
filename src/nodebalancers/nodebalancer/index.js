@@ -4,6 +4,7 @@ import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import IndexPage from './layouts/IndexPage';
 import EditConfigPage from './layouts/EditConfigPage';
 import AddConfigPage from './layouts/AddConfigPage';
+import ConfigViewSummaryPage from './configs';
 
 export default (
   <Route path=":nbLabel">
@@ -12,7 +13,7 @@ export default (
       <IndexRedirect to=".." />
       <Route path="create" component={AddConfigPage} />
       <Route path=":port/edit" component={EditConfigPage} />
-      <Route path=":port" component={EditConfigPage} />
+      {ConfigViewSummaryPage}
     </Route>
   </Route>
 );
