@@ -33,9 +33,11 @@ export class AddModal extends Component {
       label,
       filesystem,
       size: parseInt(size),
-      distribution: distribution || null,
-      root_pass: password,
     };
+    if (distribution) {
+      data.distribution = distribution;
+      data.root_pass = password;
+    }
 
     return dispatch(dispatchOrStoreErrors.call(this, [
       () => linodes.disks.post(data, linode.id),
